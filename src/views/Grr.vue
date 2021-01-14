@@ -1,5 +1,5 @@
 <template>
-  <div class="box board-box">
+  <div class="box board-box has-background-dark">
     <Board />
   </div>
 </template>
