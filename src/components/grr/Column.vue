@@ -1,5 +1,11 @@
 <template>
-  <div class="column is-2">
+  <div
+    class="column is-2"
+    @dragstart.self="handleColumnDragstart"
+    @dragend.self="handleColumnDragend"
+    @dragenter.self="handleColumnDragenter"
+    draggable
+  >
     <div class="card has-background-link">
       <div class="card-header">
         <div class="card-header-title has-background-primary">
@@ -21,6 +27,9 @@
           v-for="(task, $taskIdx) in item.list"
           :key="task.id"
           @click="handleTaskClick(columnIdx, $taskIdx, task)"
+          @dragstart.self="handleTaskDragstart"
+          @dragend.self="handleTaskDragend"
+          draggable
         >
           <button class="button is-dark has-text-weight-bold one-line">
             {{ task.label }}
@@ -75,12 +84,19 @@ export default {
     };
   },
   methods: {
-    ...mapActions(["saveTask"]),
+    ...mapActions([
+      "grr/saveTask",
+      "grr/pickColumnUp",
+      "grr/moveColumn",
+      "grr/overColumnEnter",
+      "grr/pickTaskUp",
+      "grr/moveTask"
+    ]),
     handleTaskClick(columnIdx, taskIdx, task) {
       this.$emit("emitTaskShow", columnIdx, taskIdx, task);
     },
     handleTaskAdd() {
-      this.saveTask({
+      this["grr/saveTask"]({
         columnIdx: this.columnIdx,
         task: {
           id: Date.now(),
@@ -89,6 +105,33 @@ export default {
         }
       });
       this.taskName = "";
+    },
+    handleColumnDragstart() {
+      this["grr/pickColumnUp"]({
+        fromIdx: this.columnIdx
+      });
+    },
+    handleColumnDragend() {
+      this["grr/moveColumn"]();
+    },
+    handleColumnDragenter() {
+      this["grr/overColumnEnter"]({
+        toIdx: this.columnIdx
+      });
+    },
+    handleTaskDragstart() {
+      this["grr/pickTaskUp"]({
+        columnIdx: 1,
+        fromIdx: 0,
+        toIdx: 1
+      });
+    },
+    handleTaskDragend() {
+      this["grr/moveTask"]({
+        columnIdx: 1,
+        fromIdx: 0,
+        toIdx: 1
+      });
     }
   }
 };
