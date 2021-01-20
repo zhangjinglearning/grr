@@ -22,26 +22,14 @@
         </a>
       </div>
       <div class="card-content tag-box">
-        <div
-          class="tile"
+        <Task
           v-for="(task, $taskIdx) in item.list"
           :key="task.id"
-          @click="handleTaskClick(columnIdx, $taskIdx, task)"
-          @dragstart.self="handleTaskDragstart($taskIdx)"
-          @dragenter="handleTaskDragenter($taskIdx)"
-          @dragend.self="handleTaskDragend"
-          draggable
-        >
-          <button class="button is-dark has-text-weight-bold one-line">
-            {{ task.label }}
-          </button>
-          <div
-            v-if="task.description"
-            class="one-line has-text-black has-text-left"
-          >
-            {{ task.description }}
-          </div>
-        </div>
+          :columnIdx="columnIdx"
+          :taskIdx="$taskIdx"
+          :task="task"
+          @emitTaskShow="$emit('emitTaskDialogShow', columnIdx, $taskIdx)"
+        />
       </div>
       <div class="card-footer">
         <div class="field">
@@ -68,14 +56,16 @@
 
 <script>
 import { mapActions } from "vuex";
+import Task from "@/components/grr/Task";
 export default {
+  components: { Task },
   props: {
     item: {
       type: Object,
       default: () => {}
     },
     columnIdx: {
-      type: [Number, String],
+      type: Number,
       required: true
     }
   },
@@ -89,14 +79,8 @@ export default {
       "grr/saveTask",
       "grr/pickColumnUp",
       "grr/overColumnEnter",
-      "grr/moveColumn",
-      "grr/pickTaskUp",
-      "grr/overTaskEnter",
-      "grr/moveTask"
+      "grr/moveColumn"
     ]),
-    handleTaskClick(columnIdx, taskIdx, task) {
-      this.$emit("emitTaskShow", columnIdx, taskIdx, task);
-    },
     handleTaskAdd() {
       this["grr/saveTask"]({
         columnIdx: this.columnIdx,
@@ -120,50 +104,9 @@ export default {
     },
     handleColumnDragend() {
       this["grr/moveColumn"]();
-    },
-    handleTaskDragstart(taskIdx) {
-      this["grr/pickTaskUp"]({
-        columnIdx: this.columnIdx,
-        fromIdx: taskIdx
-      });
-    },
-    handleTaskDragenter(taskIdx) {
-      this["grr/overTaskEnter"]({
-        columnIdx: this.columnIdx,
-        toIdx: taskIdx
-      });
-    },
-    handleTaskDragend() {
-      this["grr/moveTask"]();
     }
   }
 };
 </script>
 
-<style lang="scss" scoped>
-.one-line {
-  width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.tag-box {
-  display: flex;
-  flex-direction: column;
-
-  .tile {
-    margin-bottom: 20px;
-    display: flex;
-    flex-direction: column;
-
-    .tag {
-      width: 100%;
-    }
-  }
-
-  .tile:last-child {
-    margin-bottom: 0;
-  }
-}
-</style>
+<style lang="scss" scoped></style>

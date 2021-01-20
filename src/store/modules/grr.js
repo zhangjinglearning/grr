@@ -59,10 +59,10 @@ const grr = {
         state.board.columns[columnIdx].list[taskIdx] = task;
       }
     },
-    SAVE_COLUMN: state => {
+    SAVE_COLUMN: (state, { columnName }) => {
       state.board.columns.push({
         id: Date.now(),
-        label: "default",
+        label: columnName,
         list: [],
         icon: "fa-bug"
       });
@@ -108,8 +108,8 @@ const grr = {
     saveTask({ commit }, params) {
       commit("SAVE_TASK", params);
     },
-    saveColumn({ commit }) {
-      commit("SAVE_COLUMN");
+    saveColumn({ commit }, params) {
+      commit("SAVE_COLUMN", params);
     },
     pickColumnUp({ commit }, params) {
       commit("SAVE_COLUMN_FROM", params);

@@ -7,15 +7,26 @@
         :key="col.id"
         :item="col"
         :columnIdx="$colIdx"
-        @emitTaskShow="handleTaskShow"
+        @emitTaskDialogShow="handleTaskShow"
       />
-      <div class="column">
-        <button
-          class="button is-primary has-text-weight-bold"
-          @click="handleColumnAdd"
-        >
-          add column
-        </button>
+      <div class="column is-2">
+        <div class="field">
+          <p class="control has-icons-left has-icons-right">
+            <input
+              class="input"
+              type="email"
+              placeholder="add column"
+              v-model="columnName"
+              @keyup.enter="handleColumnAdd"
+            />
+            <span class="icon is-small is-left">
+              <i class="fab fa-google"></i>
+            </span>
+            <span class="icon is-small is-right">
+              <i class="fas fa-checked"></i>
+            </span>
+          </p>
+        </div>
       </div>
     </div>
     <Dialog :flag.sync="flag" :task="task" @emitTaskUpdate="handleTaskUpdate" />
@@ -36,7 +47,8 @@ export default {
       flag: false,
       columnIdx: "",
       taskIdx: "",
-      task: {}
+      task: {},
+      columnName: ""
     };
   },
   computed: {
@@ -46,10 +58,10 @@ export default {
   },
   methods: {
     ...mapActions(["grr/saveTask", "grr/saveColumn"]),
-    handleTaskShow(columnIdx, taskIdx, task) {
+    handleTaskShow(columnIdx, taskIdx) {
       this.columnIdx = columnIdx;
       this.taskIdx = taskIdx;
-      this.task = task;
+      this.task = this.board.columns[columnIdx].list[taskIdx];
       this.flag = true;
     },
     handleTaskUpdate(task) {
@@ -64,7 +76,8 @@ export default {
       this.flag = false;
     },
     handleColumnAdd() {
-      this["grr/saveColumn"]();
+      const columnName = this.columnName;
+      this["grr/saveColumn"]({ columnName });
     }
   }
 };
