@@ -28,16 +28,28 @@ const grr = {
           id: 3,
           label: "done",
           list: [
-            { id: 31, label: "played over over", description: "" },
-            { id: 32, label: "played over over", description: "" },
-            { id: 33, label: "played over over", description: "" }
+            { id: 31, label: "played 1 over over", description: "" },
+            { id: 32, label: "played 2 over over", description: "" },
+            { id: 33, label: "played 3 over over", description: "" }
           ],
           icon: "fa-check-circle"
         }
       ]
     },
-    moveColumnFromIdx: 0,
-    moveColumnToIdx: 0
+    moveColumn: {
+      fromIdx: 0,
+      toIdx: 0
+    },
+    moveTask: {
+      from: {
+        columnIdx: 0,
+        fromIdx: 0
+      },
+      to: {
+        columnIdx: 0,
+        toIdx: 0
+      }
+    }
   },
   mutations: {
     SAVE_TASK: (state, { columnIdx, taskIdx = -1, task }) => {
@@ -55,30 +67,41 @@ const grr = {
         icon: "fa-bug"
       });
     },
-    PICK_COLUMN_UP: (state, { fromIdx }) => {
-      state.moveColumnFromIdx = fromIdx;
+    SAVE_COLUMN_FROM: (state, { fromIdx }) => {
+      state.moveColumn.fromIdx = fromIdx;
     },
-    OVER_COLUMN_ENTER: (state, { toIdx }) => {
-      state.moveColumnToIdx = toIdx;
+    SAVE_COLUMN_TO: (state, { toIdx }) => {
+      state.moveColumn.toIdx = toIdx;
     },
-    MOVE_COLUMN_TO: state => {
-      if (state.moveColumnFromIdx !== state.moveColumnToIdx) {
-        if (state.moveColumnFromIdx < state.moveColumnToIdx) {
-          const moveColumn = state.board.columns[state.moveColumnFromIdx];
-          state.board.columns.splice(state.moveColumnToIdx + 1, 0, moveColumn);
-          state.board.columns.splice(state.moveColumnFromIdx, 1);
-        } else {
-          const moveColumn = state.board.columns[state.moveColumnFromIdx];
-          state.board.columns.splice(state.moveColumnToIdx, 0, moveColumn);
-          state.board.columns.splice(state.moveColumnFromIdx + 1, 1);
-        }
-      }
+    MOVE_COLUMN_FORWARD: state => {
+      const moveColumn = state.board.columns[state.moveColumn.fromIdx];
+      state.board.columns.splice(state.moveColumn.toIdx + 1, 0, moveColumn);
+      state.board.columns.splice(state.moveColumn.fromIdx, 1);
     },
-    PICK_TASK_UP: () => {
-      console.log("PICK_TASK_UP");
+    MOVE_COLUMN_BACKWARD: state => {
+      const moveColumn = state.board.columns[state.moveColumn.fromIdx];
+      state.board.columns.splice(state.moveColumn.toIdx, 0, moveColumn);
+      state.board.columns.splice(state.moveColumn.fromIdx + 1, 1);
     },
-    MOVE_TASK_TO: () => {
-      console.log("MOVE_TASK_TO");
+    SAVE_TASK_FROM: (state, params) => {
+      state.moveTask.from = params;
+    },
+    SAVE_TASK_TO: (state, params) => {
+      state.moveTask.to = params;
+    },
+    MOVE_TASK_FORWARD: state => {
+      const from = state.moveTask.from;
+      const to = state.moveTask.to;
+      const moveTask = state.board.columns[from.columnIdx].list[from.fromIdx];
+      state.board.columns[to.columnIdx].list.splice(to.toIdx + 1, 0, moveTask);
+      state.board.columns[from.columnIdx].list.splice(from.fromIdx, 1);
+    },
+    MOVE_TASK_BACKWARD: state => {
+      const from = state.moveTask.from;
+      const to = state.moveTask.to;
+      const moveTask = state.board.columns[from.columnIdx].list[from.fromIdx];
+      state.board.columns[to.columnIdx].list.splice(to.toIdx, 0, moveTask);
+      state.board.columns[from.columnIdx].list.splice(from.fromIdx + 1, 1);
     }
   },
   actions: {
@@ -89,19 +112,41 @@ const grr = {
       commit("SAVE_COLUMN");
     },
     pickColumnUp({ commit }, params) {
-      commit("PICK_COLUMN_UP", params);
+      commit("SAVE_COLUMN_FROM", params);
     },
     overColumnEnter({ commit }, params) {
-      commit("OVER_COLUMN_ENTER", params);
+      commit("SAVE_COLUMN_TO", params);
     },
-    moveColumn({ commit }, params) {
-      commit("MOVE_COLUMN_TO", params);
+    moveColumn({ state, commit }) {
+      if (state.moveColumn.fromIdx !== state.moveColumn.toIdx) {
+        if (state.moveColumn.fromIdx < state.moveColumn.toIdx) {
+          commit("MOVE_COLUMN_FORWARD");
+        } else {
+          commit("MOVE_COLUMN_BACKWARD");
+        }
+      }
     },
     pickTaskUp({ commit }, params) {
-      commit("PICK_TASK_UP", params);
+      commit("SAVE_TASK_FROM", params);
     },
-    moveTask({ commit }, params) {
-      commit("MOVE_TASK_TO", params);
+    overTaskEnter({ commit }, params) {
+      commit("SAVE_TASK_TO", params);
+    },
+    moveTask({ state, commit }) {
+      // column is no-data.
+      const from = state.moveTask.from;
+      const to = state.moveTask.to;
+      if (from.columnIdx === to.columnIdx) {
+        if (from.fromIdx !== to.toIdx) {
+          if (from.fromIdx < to.toIdx) {
+            commit("MOVE_TASK_FORWARD");
+          } else {
+            commit("MOVE_TASK_BACKWARD");
+          }
+        }
+      } else {
+        commit("MOVE_TASK_FORWARD");
+      }
     }
   }
 };
