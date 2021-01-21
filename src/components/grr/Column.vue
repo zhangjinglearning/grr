@@ -75,14 +75,14 @@ export default {
     };
   },
   methods: {
-    ...mapActions([
-      "grr/saveTask",
-      "grr/pickColumnUp",
-      "grr/overColumnEnter",
-      "grr/moveColumn"
+    ...mapActions("grr", [
+      "saveTask",
+      "pickColumnUp",
+      "overColumnEnter",
+      "moveColumn"
     ]),
     handleTaskAdd() {
-      this["grr/saveTask"]({
+      this.saveTask({
         columnIdx: this.columnIdx,
         task: {
           id: Date.now(),
@@ -93,17 +93,17 @@ export default {
       this.taskName = "";
     },
     handleColumnDragstart() {
-      this["grr/pickColumnUp"]({
+      this.pickColumnUp({
         fromIdx: this.columnIdx
       });
     },
     handleColumnDragenter() {
-      this["grr/overColumnEnter"]({
+      this.overColumnEnter({
         toIdx: this.columnIdx
       });
     },
     handleColumnDragend() {
-      this["grr/moveColumn"]();
+      this.moveColumn();
     }
   }
 };

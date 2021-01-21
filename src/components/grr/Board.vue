@@ -52,12 +52,10 @@ export default {
     };
   },
   computed: {
-    ...mapState("grr", {
-      board: state => state.board
-    })
+    ...mapState("grr", ["board"])
   },
   methods: {
-    ...mapActions(["grr/saveTask", "grr/saveColumn"]),
+    ...mapActions("grr", ["saveTask", "saveColumn"]),
     handleTaskShow(columnIdx, taskIdx) {
       this.columnIdx = columnIdx;
       this.taskIdx = taskIdx;
@@ -65,7 +63,7 @@ export default {
       this.flag = true;
     },
     handleTaskUpdate(task) {
-      this["grr/saveTask"]({
+      this.saveTask({
         columnIdx: this.columnIdx,
         taskIdx: this.taskIdx,
         task
@@ -77,7 +75,8 @@ export default {
     },
     handleColumnAdd() {
       const columnName = this.columnName;
-      this["grr/saveColumn"]({ columnName });
+      this.saveColumn({ columnName });
+      this.columnName = "";
     }
   }
 };

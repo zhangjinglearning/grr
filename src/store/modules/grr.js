@@ -1,4 +1,4 @@
-const grr = {
+export default {
   namespaced: true,
   state: {
     board: {
@@ -150,5 +150,3 @@ const grr = {
     }
   }
 };
-
-export default grr;

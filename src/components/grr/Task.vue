@@ -34,21 +34,21 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["grr/pickTaskUp", "grr/overTaskEnter", "grr/moveTask"]),
+    ...mapActions("grr", ["pickTaskUp", "overTaskEnter", "moveTask"]),
     handleTaskDragstart() {
-      this["grr/pickTaskUp"]({
+      this.pickTaskUp({
         columnIdx: this.columnIdx,
         fromIdx: this.taskIdx
       });
     },
     handleTaskDragenter() {
-      this["grr/overTaskEnter"]({
+      this.overTaskEnter({
         columnIdx: this.columnIdx,
         toIdx: this.taskIdx
       });
     },
     handleTaskDragend() {
-      this["grr/moveTask"]();
+      this.moveTask();
     }
   }
 };
