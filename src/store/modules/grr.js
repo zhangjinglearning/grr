@@ -73,6 +73,9 @@ export default {
     SAVE_COLUMN_TO: (state, { toIdx }) => {
       state.moveColumn.toIdx = toIdx;
     },
+    SHOW_COLUMN_WILL_TO: () => {
+      console.log('SHOW_COLUMN_WILL_TO');
+    },
     MOVE_COLUMN_FORWARD: state => {
       const moveColumn = state.board.columns[state.moveColumn.fromIdx];
       state.board.columns.splice(state.moveColumn.toIdx + 1, 0, moveColumn);
@@ -116,6 +119,7 @@ export default {
     },
     overColumnEnter({ commit }, params) {
       commit("SAVE_COLUMN_TO", params);
+      commit("SHOW_COLUMN_WILL_TO", params);
     },
     moveColumn({ state, commit }) {
       if (state.moveColumn.fromIdx !== state.moveColumn.toIdx) {

@@ -56,6 +56,7 @@
 
 <script>
 import { mapActions } from "vuex";
+import { throttle } from 'throttle-debounce';
 import Task from "@/components/grr/Task";
 export default {
   components: { Task },
@@ -97,11 +98,11 @@ export default {
         fromIdx: this.columnIdx
       });
     },
-    handleColumnDragenter() {
+    handleColumnDragenter: throttle(1314, function() {
       this.overColumnEnter({
         toIdx: this.columnIdx
       });
-    },
+    }),
     handleColumnDragend() {
       this.moveColumn();
     }

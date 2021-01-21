@@ -18,6 +18,7 @@
 
 <script>
 import { mapActions } from "vuex";
+import { throttle } from 'throttle-debounce';
 export default {
   props: {
     columnIdx: {
@@ -41,12 +42,12 @@ export default {
         fromIdx: this.taskIdx
       });
     },
-    handleTaskDragenter() {
+    handleTaskDragenter: throttle(1314, function() {
       this.overTaskEnter({
         columnIdx: this.columnIdx,
         toIdx: this.taskIdx
       });
-    },
+    }),
     handleTaskDragend() {
       this.moveTask();
     }
