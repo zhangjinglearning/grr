@@ -6,7 +6,9 @@
 
 <script>
 import Board from "@/components/grr/Board.vue";
+
 export default {
+  name: "Grr",
   components: {
     Board
   }

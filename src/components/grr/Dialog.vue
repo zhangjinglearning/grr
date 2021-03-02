@@ -48,6 +48,7 @@
 
 <script>
 export default {
+  name: "Dialog",
   props: {
     flag: {
       type: Boolean,

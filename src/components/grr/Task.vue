@@ -1,55 +1,21 @@
 <template>
-  <div
-    class="tile"
-    @click="$emit('emitTaskShow')"
-    @dragstart.self="handleTaskDragstart"
-    @dragenter="handleTaskDragenter"
-    @dragend.self="handleTaskDragend"
-    draggable
-  >
+  <div class="tile" @click="$emit('emitTaskShow')">
     <button class="button is-dark has-text-weight-bold one-line">
       {{ task.label }}
     </button>
-    <div v-if="task.description" class="one-line has-text-black has-text-left">
-      {{ task.description }}
+    <div class="one-line has-text-black has-text-left">
+      {{ task.description || "none" }}
     </div>
   </div>
 </template>
 
 <script>
-import { mapActions } from "vuex";
-import { throttle } from 'throttle-debounce';
 export default {
+  name: "Task",
   props: {
-    columnIdx: {
-      type: Number,
-      required: true
-    },
-    taskIdx: {
-      type: Number,
-      required: true
-    },
     task: {
       type: Object,
       required: true
-    }
-  },
-  methods: {
-    ...mapActions("grr", ["pickTaskUp", "overTaskEnter", "moveTask"]),
-    handleTaskDragstart() {
-      this.pickTaskUp({
-        columnIdx: this.columnIdx,
-        fromIdx: this.taskIdx
-      });
-    },
-    handleTaskDragenter: throttle(1314, function() {
-      this.overTaskEnter({
-        columnIdx: this.columnIdx,
-        toIdx: this.taskIdx
-      });
-    }),
-    handleTaskDragend() {
-      this.moveTask();
     }
   }
 };
@@ -57,10 +23,11 @@ export default {
 
 <style lang="scss" scoped>
 .one-line {
-  width: 100%;
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .tag-box {

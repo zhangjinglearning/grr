@@ -1,14 +1,11 @@
 <template>
-  <div
-    class="column is-2"
-    @dragstart.self="handleColumnDragstart"
-    @dragenter="handleColumnDragenter"
-    @dragend.self="handleColumnDragend"
-    draggable
-  >
+  <div class="container">
     <div class="card has-background-link">
       <div class="card-header">
-        <div class="card-header-title has-background-primary">
+        <div
+          class="card-header-title has-background-primary"
+          style="cursor:grab"
+        >
           {{ item.label }}
         </div>
         <a
@@ -21,18 +18,20 @@
           </span>
         </a>
       </div>
-      <div class="card-content tag-box">
-        <Task
-          v-for="(task, $taskIdx) in item.list"
-          :key="task.id"
-          :columnIdx="columnIdx"
-          :taskIdx="$taskIdx"
-          :task="task"
-          @emitTaskShow="$emit('emitTaskDialogShow', columnIdx, $taskIdx)"
-        />
-      </div>
+      <Container
+        class="card-content tag-box"
+        @drop="handleTaskDragend($event, columnIdx)"
+        group-name="task"
+      >
+        <Draggable v-for="(task, $taskIdx) in item.list" :key="task.id">
+          <Task
+            :task="task"
+            @emitTaskShow="$emit('emitTaskDialogShow', columnIdx, $taskIdx)"
+          />
+        </Draggable>
+      </Container>
       <div class="card-footer">
-        <div class="field">
+        <div class="field" style="width:100%">
           <p class="control has-icons-left has-icons-right">
             <input
               class="input"
@@ -55,11 +54,13 @@
 </template>
 
 <script>
+import { Container, Draggable } from "vue-smooth-dnd";
 import { mapActions } from "vuex";
-import { throttle } from 'throttle-debounce';
 import Task from "@/components/grr/Task";
+
 export default {
-  components: { Task },
+  name: "Column",
+  components: { Task, Container, Draggable },
   props: {
     item: {
       type: Object,
@@ -78,9 +79,10 @@ export default {
   methods: {
     ...mapActions("grr", [
       "saveTask",
-      "pickColumnUp",
-      "overColumnEnter",
-      "moveColumn"
+
+      "pickTaskUp",
+      "overTaskEnter",
+      "moveTask"
     ]),
     handleTaskAdd() {
       this.saveTask({
@@ -93,18 +95,21 @@ export default {
       });
       this.taskName = "";
     },
-    handleColumnDragstart() {
-      this.pickColumnUp({
-        fromIdx: this.columnIdx
-      });
-    },
-    handleColumnDragenter: throttle(1314, function() {
-      this.overColumnEnter({
-        toIdx: this.columnIdx
-      });
-    }),
-    handleColumnDragend() {
-      this.moveColumn();
+
+    handleTaskDragend({ removedIndex, addedIndex }, columnIdx) {
+      if (removedIndex !== null) {
+        this.pickTaskUp({
+          columnIdx,
+          fromIdx: removedIndex
+        });
+      }
+      if (addedIndex !== null) {
+        this.overTaskEnter({
+          columnIdx,
+          toIdx: addedIndex
+        });
+      }
+      this.moveTask();
     }
   }
 };

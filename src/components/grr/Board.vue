@@ -1,14 +1,23 @@
 <template>
   <div class="contrainer">
     <div class="title has-text-primary">{{ board.label }}</div>
-    <div class="columns">
-      <Column
+    <Container
+      class="columns"
+      @drop="handleColumnDragend"
+      orientation="horizontal"
+      lock-axis="x"
+    >
+      <Draggable
+        class="column is-2"
         v-for="(col, $colIdx) in board.columns"
         :key="col.id"
-        :item="col"
-        :columnIdx="$colIdx"
-        @emitTaskDialogShow="handleTaskShow"
-      />
+      >
+        <Column
+          :item="col"
+          :columnIdx="$colIdx"
+          @emitTaskDialogShow="handleTaskShow"
+        />
+      </Draggable>
       <div class="column is-2">
         <div class="field">
           <p class="control has-icons-left has-icons-right">
@@ -28,19 +37,24 @@
           </p>
         </div>
       </div>
-    </div>
+    </Container>
     <Dialog :flag.sync="flag" :task="task" @emitTaskUpdate="handleTaskUpdate" />
   </div>
 </template>
 
 <script>
+import { Container, Draggable } from "vue-smooth-dnd";
 import Column from "@/components/grr/Column.vue";
 import Dialog from "@/components/grr/Dialog.vue";
 import { mapState, mapActions } from "vuex";
+
 export default {
+  name: "Board",
   components: {
     Column,
-    Dialog
+    Dialog,
+    Container,
+    Draggable
   },
   data() {
     return {
@@ -55,7 +69,13 @@ export default {
     ...mapState("grr", ["board"])
   },
   methods: {
-    ...mapActions("grr", ["saveTask", "saveColumn"]),
+    ...mapActions("grr", [
+      "saveTask",
+      "saveColumn",
+      "pickColumnUp",
+      "overColumnEnter",
+      "moveColumn"
+    ]),
     handleTaskShow(columnIdx, taskIdx) {
       this.columnIdx = columnIdx;
       this.taskIdx = taskIdx;
@@ -77,6 +97,15 @@ export default {
       const columnName = this.columnName;
       this.saveColumn({ columnName });
       this.columnName = "";
+    },
+    handleColumnDragend({ removedIndex, addedIndex }) {
+      this.pickColumnUp({
+        fromIdx: removedIndex
+      });
+      this.overColumnEnter({
+        toIdx: addedIndex
+      });
+      this.moveColumn();
     }
   }
 };
