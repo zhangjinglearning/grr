@@ -56,7 +56,7 @@
 <script>
 import { Container, Draggable } from "vue-smooth-dnd";
 import { mapActions } from "vuex";
-import Task from "@/components/grr/Task";
+import Task from "./Task.vue";
 
 export default {
   name: "Column",

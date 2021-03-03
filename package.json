@@ -5,7 +5,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "vite": "node ./bin/vite"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.2",
@@ -29,7 +30,9 @@
     "eslint-plugin-vue": "^6.2.2",
     "node-sass": "^4.12.0",
     "prettier": "^1.19.1",
+    "sass": "^1.32.8",
     "sass-loader": "^8.0.2",
+    "vue-cli-plugin-vite": "^0.3.0",
     "vue-template-compiler": "^2.6.11"
   },
   "eslintConfig": {

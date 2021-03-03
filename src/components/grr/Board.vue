@@ -43,10 +43,10 @@
 </template>
 
 <script>
-import { Container, Draggable } from "vue-smooth-dnd";
-import Column from "@/components/grr/Column.vue";
-import Dialog from "@/components/grr/Dialog.vue";
 import { mapState, mapActions } from "vuex";
+import { Container, Draggable } from "vue-smooth-dnd";
+import Column from "./Column.vue"
+import Dialog from "./Dialog.vue";
 
 export default {
   name: "Board",
