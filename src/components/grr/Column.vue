@@ -19,7 +19,7 @@
         </a>
       </div>
       <Container
-        class="card-content tag-box"
+        class="card-content"
         @drop="handleTaskDragend($event, columnIdx)"
         group-name="task"
       >
@@ -27,11 +27,12 @@
           <Task
             :task="task"
             @emitTaskShow="$emit('emitTaskDialogShow', columnIdx, $taskIdx)"
+            @emitTaskRemove="$emit('emitTaskDialogRemove', columnIdx, $taskIdx)"
           />
         </Draggable>
       </Container>
       <div class="card-footer">
-        <div class="field" style="width:100%">
+        <div class="field container">
           <p class="control has-icons-left has-icons-right">
             <input
               class="input"
@@ -64,16 +65,16 @@ export default {
   props: {
     item: {
       type: Object,
-      default: () => {}
+      default: () => {},
     },
     columnIdx: {
       type: Number,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
-      taskName: ""
+      taskName: "",
     };
   },
   methods: {
@@ -82,7 +83,7 @@ export default {
 
       "pickTaskUp",
       "overTaskEnter",
-      "moveTask"
+      "moveTask",
     ]),
     handleTaskAdd() {
       this.saveTask({
@@ -90,8 +91,8 @@ export default {
         task: {
           id: Date.now(),
           label: this.taskName,
-          description: ""
-        }
+          description: "",
+        },
       });
       this.taskName = "";
     },
@@ -100,18 +101,18 @@ export default {
       if (removedIndex !== null) {
         this.pickTaskUp({
           columnIdx,
-          fromIdx: removedIndex
+          fromIdx: removedIndex,
         });
       }
       if (addedIndex !== null) {
         this.overTaskEnter({
           columnIdx,
-          toIdx: addedIndex
+          toIdx: addedIndex,
         });
       }
       this.moveTask();
-    }
-  }
+    },
+  },
 };
 </script>
 

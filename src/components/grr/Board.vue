@@ -6,6 +6,7 @@
       @drop="handleColumnDragend"
       orientation="horizontal"
       lock-axis="x"
+      style="display:flex"
     >
       <Draggable
         class="column is-2"
@@ -16,6 +17,7 @@
           :item="col"
           :columnIdx="$colIdx"
           @emitTaskDialogShow="handleTaskShow"
+          @emitTaskDialogRemove="handleTaskRemove"
         />
       </Draggable>
       <div class="column is-2">
@@ -45,7 +47,7 @@
 <script>
 import { mapState, mapActions } from "vuex";
 import { Container, Draggable } from "vue-smooth-dnd";
-import Column from "./Column.vue"
+import Column from "./Column.vue";
 import Dialog from "./Dialog.vue";
 
 export default {
@@ -54,7 +56,7 @@ export default {
     Column,
     Dialog,
     Container,
-    Draggable
+    Draggable,
   },
   data() {
     return {
@@ -62,11 +64,11 @@ export default {
       columnIdx: "",
       taskIdx: "",
       task: {},
-      columnName: ""
+      columnName: "",
     };
   },
   computed: {
-    ...mapState("grr", ["board"])
+    ...mapState("grr", ["board"]),
   },
   methods: {
     ...mapActions("grr", [
@@ -74,7 +76,8 @@ export default {
       "saveColumn",
       "pickColumnUp",
       "overColumnEnter",
-      "moveColumn"
+      "moveColumn",
+      "removeTask",
     ]),
     handleTaskShow(columnIdx, taskIdx) {
       this.columnIdx = columnIdx;
@@ -86,7 +89,7 @@ export default {
       this.saveTask({
         columnIdx: this.columnIdx,
         taskIdx: this.taskIdx,
-        task
+        task,
       });
       this.columnIdx = "";
       this.taskIdx = "";
@@ -98,16 +101,19 @@ export default {
       this.saveColumn({ columnName });
       this.columnName = "";
     },
+    handleTaskRemove(columnIdx, taskIdx) {
+      this.removeTask({ columnIdx, taskIdx });
+    },
     handleColumnDragend({ removedIndex, addedIndex }) {
       this.pickColumnUp({
-        fromIdx: removedIndex
+        fromIdx: removedIndex,
       });
       this.overColumnEnter({
-        toIdx: addedIndex
+        toIdx: addedIndex,
       });
       this.moveColumn();
-    }
-  }
+    },
+  },
 };
 </script>
 

@@ -1,12 +1,16 @@
 <template>
-  <div class="tile" @click="$emit('emitTaskShow')">
-    <button class="button is-dark has-text-weight-bold one-line">
+  <span class="tile notification is-warning">
+    <button
+      class="button is-dark has-text-weight-bold one-line"
+      @click="$emit('emitTaskShow')"
+    >
       {{ task.label }}
     </button>
-    <div class="one-line has-text-black has-text-left">
-      {{ task.description || "none" }}
+    <div v-if="task.description" class="one-line has-text-black has-text-left">
+      {{ task.description }}
     </div>
-  </div>
+    <button class="delete is-large" @click="$emit('emitTaskRemove')"></button>
+  </span>
 </template>
 
 <script>
@@ -15,9 +19,9 @@ export default {
   props: {
     task: {
       type: Object,
-      required: true
-    }
-  }
+      required: true,
+    },
+  },
 };
 </script>
 
@@ -25,27 +29,13 @@ export default {
 .one-line {
   overflow: hidden;
   text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  white-space: nowrap;
+  width: 100%;
 }
 
-.tag-box {
+.tile {
+  margin: 10px 0;
   display: flex;
   flex-direction: column;
-
-  .tile {
-    margin-bottom: 20px;
-    display: flex;
-    flex-direction: column;
-
-    .tag {
-      width: 100%;
-    }
-  }
-
-  .tile:last-child {
-    margin-bottom: 0;
-  }
 }
 </style>
