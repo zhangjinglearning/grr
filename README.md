@@ -1,26 +1,11 @@
-# grr
+# Grr - trello clone
 
-base on vuejs and bulmacss
+grr~ 是 peppa pig 的 little brother george 的口头禅。
 
-## Project setup
-```
-npm install
-```
+听起来呛是 grow~
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+感觉非常贴合 trello 应用的特性
 
-### Compiles and minifies for production
-```
-npm run build
-```
+---
 
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+> [demo](https://grr.onrender.com/)
