@@ -10,4 +10,4 @@ grr~ 是 peppa pig 的 little brother george 的口头禅。
 
 > [demo](https://grr.onrender.com/)
 
-![Anurag's GitHub stats](https://github-readme-stats.vercel.app/api?username=zhangjinglearning&show_icons=true?theme=vue-dark)
+![Anurag's GitHub stats](https://github-readme-stats.vercel.app/api?username=zhangjinglearning&theme=vue-dark&show_icons=true)
