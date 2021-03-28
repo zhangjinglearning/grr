@@ -4,12 +4,12 @@ import router from "./router";
 import store from "./store";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "@fortawesome/fontawesome-free/js/all.min.js";
-import 'bulma';
+import "bulma";
 
 Vue.config.productionTip = false;
 
 new Vue({
   router,
   store,
-  render: h => h(App)
+  render: (h) => h(App),
 }).$mount("#app");
