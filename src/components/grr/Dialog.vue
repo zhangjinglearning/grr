@@ -10,7 +10,7 @@
               class="input"
               type="text"
               placeholder="Text input"
-              v-model="task.label"
+              v-model="draft.label"
             />
           </div>
         </div>
@@ -20,7 +20,7 @@
             <textarea
               class="textarea"
               placeholder="Textarea"
-              v-model="task.description"
+              v-model="draft.description"
             ></textarea>
           </div>
         </div>
@@ -57,7 +57,19 @@ export default {
     },
     task: {
       type: Object,
-      default: () => {}
+      default: () => ({})
+    }
+  },
+  data() {
+    return {
+      draft: {}
+    };
+  },
+  watch: {
+    flag(open) {
+      if (open) {
+        this.draft = { ...this.task };
+      }
     }
   },
   methods: {
@@ -65,7 +77,7 @@ export default {
       this.$emit("update:flag", false);
     },
     handleSubmitClick() {
-      this.$emit("emitTaskUpdate", this.task);
+      this.$emit("emitTaskUpdate", this.draft);
     }
   }
 };

@@ -1,9 +1,9 @@
 <template>
-  <div class="contrainer">
+  <div class="container">
     <div class="title has-text-primary">{{ board.label }}</div>
     <Container
       class="columns"
-      @drop="handleColumnDragend"
+      @drop="dropColumn"
       orientation="horizontal"
       lock-axis="x"
       style="display:flex"
@@ -25,7 +25,7 @@
           <p class="control has-icons-left has-icons-right">
             <input
               class="input"
-              type="email"
+              type="text"
               placeholder="add column"
               v-model="columnName"
               @keyup.enter="handleColumnAdd"
@@ -96,15 +96,11 @@ export default {
       this.flag = false;
     },
     handleColumnAdd() {
-      const columnName = this.columnName;
-      this.saveColumn({ columnName });
+      this.saveColumn({ columnName: this.columnName });
       this.columnName = "";
     },
     handleTaskRemove(columnIdx, taskIdx) {
       this.removeTask({ columnIdx, taskIdx });
-    },
-    handleColumnDragend({ removedIndex, addedIndex }) {
-      this.dropColumn({ removedIndex, addedIndex });
     },
   },
 };

@@ -37,7 +37,7 @@
           <p class="control has-icons-left has-icons-right">
             <input
               class="input"
-              type="email"
+              type="text"
               placeholder="add task"
               v-model="taskName"
               @keyup.enter="handleTaskAdd"
@@ -68,7 +68,7 @@ export default {
   props: {
     item: {
       type: Object,
-      default: () => {},
+      default: () => ({}),
     },
     columnIdx: {
       type: Number,
