@@ -16,6 +16,7 @@
 <script>
 export default {
   name: "Task",
+  emits: ["emitTaskShow", "emitTaskRemove"],
   props: {
     task: {
       type: Object,

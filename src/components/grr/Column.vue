@@ -20,7 +20,8 @@
       </div>
       <Container
         class="card-content"
-        @drop="handleTaskDragend($event, columnIdx)"
+        @drop="handleTaskDragend"
+        @drag-start="beginTaskDrag"
         group-name="task"
       >
         <Draggable v-for="(task, $taskIdx) in item.list" :key="task.id">
@@ -55,13 +56,15 @@
 </template>
 
 <script>
-import { Container, Draggable } from "vue-smooth-dnd";
-import { mapActions } from "vuex";
+import { mapActions } from "pinia";
+import { Container, Draggable } from "vue3-smooth-dnd";
 import Task from "./Task.vue";
+import { useGrrStore } from "@/store";
 
 export default {
   name: "Column",
   components: { Task, Container, Draggable },
+  emits: ["emitTaskDialogShow", "emitTaskDialogRemove"],
   props: {
     item: {
       type: Object,
@@ -78,13 +81,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions("grr", [
-      "saveTask",
-
-      "pickTaskUp",
-      "overTaskEnter",
-      "moveTask",
-    ]),
+    ...mapActions(useGrrStore, ["saveTask", "dropTask", "beginTaskDrag"]),
     handleTaskAdd() {
       this.saveTask({
         columnIdx: this.columnIdx,
@@ -97,20 +94,12 @@ export default {
       this.taskName = "";
     },
 
-    handleTaskDragend({ removedIndex, addedIndex }, columnIdx) {
-      if (removedIndex !== null) {
-        this.pickTaskUp({
-          columnIdx,
-          fromIdx: removedIndex,
-        });
-      }
-      if (addedIndex !== null) {
-        this.overTaskEnter({
-          columnIdx,
-          toIdx: addedIndex,
-        });
-      }
-      this.moveTask();
+    handleTaskDragend({ removedIndex, addedIndex }) {
+      this.dropTask({
+        columnIdx: this.columnIdx,
+        removedIndex,
+        addedIndex,
+      });
     },
   },
 };

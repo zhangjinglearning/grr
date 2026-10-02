@@ -40,15 +40,16 @@
         </div>
       </div>
     </Container>
-    <Dialog :flag.sync="flag" :task="task" @emitTaskUpdate="handleTaskUpdate" />
+    <Dialog v-model:flag="flag" :task="task" @emitTaskUpdate="handleTaskUpdate" />
   </div>
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
-import { Container, Draggable } from "vue-smooth-dnd";
+import { mapState, mapActions } from "pinia";
+import { Container, Draggable } from "vue3-smooth-dnd";
 import Column from "./Column.vue";
 import Dialog from "./Dialog.vue";
+import { useGrrStore } from "@/store";
 
 export default {
   name: "Board",
@@ -68,16 +69,14 @@ export default {
     };
   },
   computed: {
-    ...mapState("grr", ["board"]),
+    ...mapState(useGrrStore, ["board"]),
   },
   methods: {
-    ...mapActions("grr", [
+    ...mapActions(useGrrStore, [
       "saveTask",
       "saveColumn",
-      "pickColumnUp",
-      "overColumnEnter",
-      "moveColumn",
       "removeTask",
+      "dropColumn",
     ]),
     handleTaskShow(columnIdx, taskIdx) {
       this.columnIdx = columnIdx;
@@ -105,13 +104,7 @@ export default {
       this.removeTask({ columnIdx, taskIdx });
     },
     handleColumnDragend({ removedIndex, addedIndex }) {
-      this.pickColumnUp({
-        fromIdx: removedIndex,
-      });
-      this.overColumnEnter({
-        toIdx: addedIndex,
-      });
-      this.moveColumn();
+      this.dropColumn({ removedIndex, addedIndex });
     },
   },
 };

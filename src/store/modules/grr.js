@@ -1,6 +1,7 @@
-export default {
-  namespaced: true,
-  state: {
+import { defineStore } from "pinia";
+
+export const useGrrStore = defineStore("grr", {
+  state: () => ({
     board: {
       label: "Workshop",
       columns: [
@@ -36,100 +37,64 @@ export default {
         },
       ],
     },
-    moveColumn: {
-      fromIdx: 0,
-      toIdx: 0,
+    pendingTask: {
+      from: null,
+      to: null,
     },
-    moveTask: {
-      from: {
-        columnIdx: 0,
-        fromIdx: 0,
-      },
-      to: {
-        columnIdx: 0,
-        toIdx: 0,
-      },
-      level: 0,
-    },
-  },
-  mutations: {
-    SAVE_TASK: (state, { columnIdx, taskIdx = -1, task }) => {
+  }),
+  actions: {
+    saveTask({ columnIdx, taskIdx = -1, task }) {
       if (taskIdx === -1) {
-        state.board.columns[columnIdx].list.push(task);
+        this.board.columns[columnIdx].list.push(task);
       } else {
-        state.board.columns[columnIdx].list[taskIdx] = task;
+        this.board.columns[columnIdx].list[taskIdx] = task;
       }
     },
-    REMOVE_TASK: (state, { columnIdx, taskIdx }) => {
-      state.board.columns[columnIdx].list.splice(taskIdx, 1);
-    },
-    SAVE_COLUMN: (state, { columnName }) => {
-      state.board.columns.push({
+    saveColumn({ columnName }) {
+      this.board.columns.push({
         id: Date.now(),
         label: columnName,
         list: [],
         icon: "fa-bug",
       });
     },
-    SAVE_COLUMN_FROM: (state, { fromIdx }) => {
-      state.moveColumn.fromIdx = fromIdx;
+    removeTask({ columnIdx, taskIdx }) {
+      this.board.columns[columnIdx].list.splice(taskIdx, 1);
     },
-    SAVE_COLUMN_TO: (state, { toIdx }) => {
-      state.moveColumn.toIdx = toIdx;
+    beginTaskDrag() {
+      this.pendingTask.from = null;
+      this.pendingTask.to = null;
     },
-    MOVE_COLUMN: (state) => {
-      const moveColumn = { ...state.board.columns[state.moveColumn.fromIdx] };
-      state.board.columns.splice(state.moveColumn.fromIdx, 1);
-      state.board.columns.splice(state.moveColumn.toIdx, 0, moveColumn);
-    },
-    SAVE_TASK_FROM: (state, params) => {
-      state.moveTask.from = params;
-      state.moveTask.level += 1;
-    },
-    SAVE_TASK_TO: (state, params) => {
-      state.moveTask.to = params;
-      state.moveTask.level += 1;
-    },
-    MOVE_TASK: (state) => {
-      const from = state.moveTask.from;
-      const to = state.moveTask.to;
-      const moveTask = {
-        ...state.board.columns[from.columnIdx].list[from.fromIdx],
-      };
-      state.board.columns[from.columnIdx].list.splice(from.fromIdx, 1);
-      state.board.columns[to.columnIdx].list.splice(to.toIdx, 0, moveTask);
-      state.moveTask.level = 0;
-    },
-  },
-  actions: {
-    saveTask({ commit }, params) {
-      commit("SAVE_TASK", params);
-    },
-    saveColumn({ commit }, params) {
-      commit("SAVE_COLUMN", params);
-    },
-    pickColumnUp({ commit }, params) {
-      commit("SAVE_COLUMN_FROM", params);
-    },
-    overColumnEnter({ commit }, params) {
-      commit("SAVE_COLUMN_TO", params);
-    },
-    moveColumn({ commit }) {
-      commit("MOVE_COLUMN");
-    },
-    pickTaskUp({ commit }, params) {
-      commit("SAVE_TASK_FROM", params);
-    },
-    overTaskEnter({ commit }, params) {
-      commit("SAVE_TASK_TO", params);
-    },
-    moveTask({ state, commit }) {
-      if (state.moveTask.level === 2) {
-        commit("MOVE_TASK");
+    dropColumn({ removedIndex, addedIndex }) {
+      if (removedIndex !== null && addedIndex !== null) {
+        const moveColumn = { ...this.board.columns[removedIndex] };
+        this.board.columns.splice(removedIndex, 1);
+        this.board.columns.splice(addedIndex, 0, moveColumn);
       }
     },
-    removeTask({ commit }, params) {
-      commit("REMOVE_TASK", params);
+    dropTask({ columnIdx, removedIndex, addedIndex }) {
+      if (removedIndex !== null && addedIndex !== null) {
+        this.moveTask({
+          from: { columnIdx, fromIdx: removedIndex },
+          to: { columnIdx, toIdx: addedIndex },
+        });
+        return;
+      }
+      if (removedIndex !== null) {
+        this.pendingTask.from = { columnIdx, fromIdx: removedIndex };
+      }
+      if (addedIndex !== null) {
+        this.pendingTask.to = { columnIdx, toIdx: addedIndex };
+      }
+      if (this.pendingTask.from && this.pendingTask.to) {
+        this.moveTask(this.pendingTask);
+        this.beginTaskDrag();
+      }
+    },
+    moveTask({ from, to }) {
+      const task = { ...this.board.columns[from.columnIdx].list[from.fromIdx] };
+      this.board.columns[from.columnIdx].list.splice(from.fromIdx, 1);
+      this.board.columns[to.columnIdx].list.splice(to.toIdx, 0, task);
     },
   },
-};
+});

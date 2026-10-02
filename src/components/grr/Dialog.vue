@@ -49,6 +49,7 @@
 <script>
 export default {
   name: "Dialog",
+  emits: ["update:flag", "emitTaskUpdate"],
   props: {
     flag: {
       type: Boolean,
