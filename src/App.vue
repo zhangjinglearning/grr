@@ -1,8 +1,7 @@
 <template>
   <div id="app">
     <div id="nav">
-      <router-link to="/">🏠 Home</router-link> | <router-link to="/grr">Grr(Trello clone)</router-link> |
-      <router-link to="/about">About</router-link>
+      <router-link to="/grr">grr</router-link> | <router-link to="/about">about</router-link>
     </div>
     <router-view />
   </div>
@@ -25,8 +24,8 @@
       color: #2c3e50;
 
       &.router-link-exact-active {
-        // Vue 芽绿压暗到白底 AA（原 #42b983 仅约 2.5:1）
-        color: #2a7d58;
+        // 激活态用积木蓝（品牌主色，白底约 5.6:1 过 AA），芽绿历史层退役
+        color: #485fc7;
       }
     }
   }

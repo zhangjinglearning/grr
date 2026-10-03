@@ -61,6 +61,9 @@ export const useGrrStore = defineStore("grr", {
     removeTask({ columnIdx, taskIdx }) {
       this.board.columns[columnIdx].list.splice(taskIdx, 1);
     },
+    removeColumn({ columnIdx }) {
+      this.board.columns.splice(columnIdx, 1);
+    },
     beginTaskDrag() {
       this.pendingTask.from = null;
       this.pendingTask.to = null;

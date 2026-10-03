@@ -9,7 +9,6 @@ colors:
   playtable-graphite: "#363636"
   ink-black: "#0a0a0a"
   slate-text: "#2c3e50"
-  sprout-active: "#2a7d58"
   paper-white: "#ffffff"
   input-border: "#dbdbdb"
 typography:
@@ -38,7 +37,7 @@ rounded:
   pill: "9999px"
 spacing:
   task-gap: "10px"
-  board-inset: "clamp(12px, 8vw, 100px)"
+  board-inset: "clamp(12px, 6vw, 72px)"
   nav-padding: "30px"
   card-content: "1.5rem"
 components:
@@ -112,7 +111,7 @@ components:
 ### Secondary
 
 - **泡泡糖青** (#00d1b2)：列头背景与看板标题文字，结构的强调色。
-- **恐龙绿** (#48c78e)：列头右侧的图标按钮，最小面积的点缀色。
+- **恐龙绿** (#48c78e)：列头右侧的状态图标块（纯装饰），最小面积的点缀色。
 
 ### Tertiary
 
@@ -122,8 +121,7 @@ components:
 
 - **石墨桌布** (#363636)：看板外框背景与任务标签按钮底色，整张桌子的底座。
 - **墨黑** (#0a0a0a)：delete 圆钮，以及 Bulma 阴影的基色。
-- **页岩灰** (#2c3e50)：全局正文文字色（App.vue 覆盖 Bulma 默认）。
-- **芽绿** (#2a7d58)：导航激活态——vue-cli 脚手架遗留的 Vue 绿压暗到白底 AA（原 #42b983 约 2.5:1），历史层，不扩展。
+- **页岩灰** (#2c3e50)：全局正文文字色（App.vue 覆盖 Bulma 默认），也是导航文字色。
 - **纸白** (#ffffff)：输入框、Dialog 面板、按钮文字。
 - **输入框边灰** (#dbdbdb)：输入框与描边控件的 1px 边框。
 
@@ -151,7 +149,7 @@ components:
 
 ## Layout
 
-石墨桌面（深色 box，左右 clamp(12px, 8vw, 100px) 流式出血——桌面 100px，窄屏收窄）承托一条横向列轨：Bulma 12 列栅格、每列 is-2（约 16.7% 宽），由平滑拖拽容器横向排布。列内任务纵向堆叠，间距 10px；每列尾部固定一个新增输入框。顶部导航 30px padding，占位极小。整体密度宽松，色块靠自身色彩区分彼此，不依赖留白节奏。窄屏（≤768px）时列轨转为纵向全宽堆叠（自定义媒体查询：Bulma 的 is-2 栅格仅 ≥769px 生效，裸 flex 会横向溢出），列拖拽方向随之切为纵向（vertical/lock y），触屏指针下 delete 圆钮放大到 44px 触控目标。
+石墨桌面（深色 box，左右 clamp(12px, 6vw, 72px) 流式出血——桌面 72px，窄屏收窄）承托一条横向列轨：Bulma 12 列栅格、每列 is-3（25% 宽，3 列 + add column 输入框恰好铺满一排），由平滑拖拽容器横向排布。列内任务纵向堆叠，间距 10px；每列尾部固定一个新增输入框。顶部导航 30px padding，占位极小。整体密度宽松，色块靠自身色彩区分彼此，不依赖留白节奏。窄屏（≤768px）时列轨转为纵向全宽堆叠（自定义媒体查询：Bulma 的 is-3 栅格仅 ≥769px 生效，裸 flex 会横向溢出），列拖拽方向随之切为纵向（vertical/lock y），触屏指针下 delete 圆钮放大到 44px 触控目标。
 
 ## Elevation & Depth
 
@@ -175,16 +173,16 @@ components:
 - **任务标签按钮:** 石墨底 (#363636) + 白字 700 粗体；它本身就是任务文本的载体，点击打开编辑弹窗
 - **Submit:** 积木蓝底白字（Dialog 内确认）
 - **Cancel:** 白底积木蓝字（is-light 变体）
-- **Delete:** 32px 墨黑完整圆钮，伪元素画 ×
+- **Delete:** 墨黑完整圆钮，伪元素画 ×——任务卡 32px、列头 24px；两段式确认（sure? / delete column? 覆层，3 秒未确认自动回退）
 - **Hover / Focus:** Bulma 默认——底色轻微加深；focus ring `0 0 0 0.125em rgba(72,95,199,.25)`
 
 ### 任务卡 Task Tile（signature）
 
-奶油黄 notification 平铺块，4px 圆角，padding `1.25rem 2.5rem 1.25rem 1.5rem`（右侧让位给绝对定位的 delete 钮）。内部纵向堆叠：标签按钮在上、描述在下，两者都单行省略（overflow ellipsis）。它是展示也是交互——整块可点、可拖、可删。
+奶油黄 notification 平铺块，4px 圆角，padding `1.25rem 2.5rem 1.25rem 1.5rem`（右侧让位给绝对定位的 delete 钮）。内部纵向堆叠：标签按钮在上（单行省略 overflow ellipsis）、描述在下（最多两行 line-clamp，长文卡自然更高）。它是展示也是交互——整块可点、可拖、可删。
 
 ### 列卡 Column Card（signature）
 
-积木蓝 card，4px 圆角，三段式：泡泡糖青列头（石墨深字 #363636——Bulma 背景类不改文字色，card-header-title 保持默认深字；bold，cursor:grab——拖动整列就抓这里）、透明内容区（1.5rem padding，任务在此堆叠）、列尾新增输入框。列头右侧恐龙绿图标钮显示列状态图标（inbox / spinner / check-circle）。
+积木蓝 card，4px 圆角，三段式：泡泡糖青列头（石墨深字 #363636——Bulma 背景类不改文字色，card-header-title 保持默认深字；bold，cursor:grab——拖动整列就抓这里，标题左侧 grip 图标标出抓取点，触屏上它是唯一 affordance）、透明内容区（1.5rem padding，任务在此堆叠）、列尾新增输入框。列头右侧恐龙绿状态图标（inbox / spinner / check-circle，纯装饰非按钮），最右 24px 墨黑删除圆钮（两段式确认删列）。
 
 ### Inputs / Fields
 
@@ -198,7 +196,7 @@ components:
 
 ### Navigation
 
-脚手架遗留层：粗体链接，页岩灰底色，激活态芽绿 (#2a7d58)。属历史，不扩展、不效仿。
+粗体链接（grr | about），页岩灰文字色，激活态积木蓝 #485fc7（复用主角色色，白底约 5.6:1 过 AA）。`/` 落地即重定向到看板，不再有独立 Home 页。
 
 ## Do's and Don'ts
 
@@ -206,7 +204,7 @@ components:
 
 - **Do** 保持一卡一色——层级问题先用饱和色块回答
 - **Do** 保持列头 cursor:grab，拖拽手感是产品核心
-- **Do** 任务文本单行省略（overflow ellipsis），保持色块紧凑
+- **Do** 任务标签单行省略、描述两行封顶（line-clamp），保持色块紧凑
 - **Do** 用字重做层级：700 标签 / 600 标题 / 400 正文
 
 ### Don't:

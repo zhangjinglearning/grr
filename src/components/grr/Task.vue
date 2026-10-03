@@ -6,7 +6,7 @@
     >
       {{ task.label }}
     </button>
-    <div v-if="task.description" class="one-line has-text-black has-text-left">
+    <div v-if="task.description" class="desc has-text-black has-text-left">
       {{ task.description }}
     </div>
     <button
@@ -16,7 +16,7 @@
       @click="armDelete"
     ></button>
     <button v-else class="delete-confirm" @click="confirmDelete">
-      确认删除?
+      sure?
     </button>
   </span>
 </template>
@@ -59,6 +59,15 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  width: 100%;
+}
+
+// 描述两行封顶：读板不点开也能看到大部分内容，长文卡自然更高
+.desc {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
   width: 100%;
 }
 

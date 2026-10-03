@@ -6,16 +6,28 @@
           class="card-header-title has-background-primary"
           style="cursor:grab"
         >
+          <i class="fas fa-grip-horizontal grip" aria-hidden="true"></i>
           {{ item.label }}
         </div>
-        <button
-          type="button"
+        <span
           class="card-header-icon has-background-success"
-          aria-label="列状态"
+          aria-hidden="true"
         >
           <span class="icon">
             <i :class="['fas', item.icon]"></i>
           </span>
+        </span>
+        <button
+          v-if="!confirming"
+          type="button"
+          class="card-header-icon has-background-primary"
+          aria-label="删除列"
+          @click="armDelete"
+        >
+          <span class="delete is-medium" aria-hidden="true"></span>
+        </button>
+        <button v-else class="delete-confirm" @click="confirmDelete">
+          delete column?
         </button>
       </div>
       <Container
@@ -62,7 +74,7 @@ import { useGrrStore } from "@/store";
 export default {
   name: "Column",
   components: { Task, Container, Draggable },
-  emits: ["emitTaskDialogShow", "emitTaskDialogRemove"],
+  emits: ["emitTaskDialogShow", "emitTaskDialogRemove", "emitColumnRemove"],
   props: {
     item: {
       type: Object,
@@ -76,7 +88,11 @@ export default {
   data() {
     return {
       taskName: "",
+      confirming: false,
     };
+  },
+  beforeUnmount() {
+    clearTimeout(this.confirmTimer);
   },
   methods: {
     ...mapActions(useGrrStore, ["saveTask", "dropTask", "beginTaskDrag"]),
@@ -102,8 +118,66 @@ export default {
         addedIndex,
       });
     },
+
+    armDelete() {
+      this.confirming = true;
+      this.confirmTimer = setTimeout(() => {
+        this.confirming = false;
+      }, 3000);
+    },
+    confirmDelete() {
+      clearTimeout(this.confirmTimer);
+      this.$emit("emitColumnRemove", this.columnIdx);
+    },
   },
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+// 列头抓取点的视觉标示（cursor:grab 在触屏上不存在，图标是唯一 affordance）
+.grip {
+  margin-right: 0.5rem;
+  opacity: 0.45;
+}
+
+// 两段式删列确认条，与 Task 的确认条同范式；card-header 默认无定位
+.card-header {
+  position: relative;
+}
+
+.delete-confirm {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  background-color: #0a0a0a;
+  border: none;
+  border-radius: 9999px;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  font-size: 1rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+// 触屏：删除圆钮与确认条达到 44px 触控目标，与任务卡同款；
+// Bulma 对 .delete 锁了 min/max-width/height，须四件套一起覆盖
+@media (pointer: coarse) {
+  .card-header-icon .delete {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    max-width: 44px;
+    max-height: 44px;
+  }
+
+  .delete-confirm {
+    height: 44px;
+  }
+}
+</style>

@@ -1,11 +1,10 @@
 import { createRouter, createWebHashHistory } from "vue-router";
-import Home from "../views/Home.vue";
 
 const routes = [
   {
+    // 落地即看板：产品只有一块板，不再经过脚手架 Home 页
     path: "/",
-    name: "Home",
-    component: Home,
+    redirect: "/grr",
   },
   {
     path: "/grr",

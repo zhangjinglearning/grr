@@ -1,7 +1,9 @@
 <template>
-  <div class="container">
+  <div>
     <h1 class="title has-text-primary">{{ board.label }}</h1>
-    <p class="hint has-text-grey-light">in-memory board, refresh to reset</p>
+    <p class="hint has-text-grey-light">
+      drag &amp; drop · in-memory board · refresh to reset
+    </p>
     <Container
       class="columns"
       :key="isNarrow ? 'v' : 'h'"
@@ -12,7 +14,7 @@
       style="display:flex"
     >
       <Draggable
-        class="column is-2"
+        class="column is-3"
         v-for="(col, $colIdx) in board.columns"
         :key="col.id"
       >
@@ -21,9 +23,10 @@
           :columnIdx="$colIdx"
           @emitTaskDialogShow="handleTaskShow"
           @emitTaskDialogRemove="handleTaskRemove"
+          @emitColumnRemove="handleColumnRemove"
         />
       </Draggable>
-      <div class="column is-2">
+      <div class="column is-3">
         <div class="field">
           <p class="control has-icons-right">
             <input
@@ -89,6 +92,7 @@ export default {
       "saveTask",
       "saveColumn",
       "removeTask",
+      "removeColumn",
       "dropColumn",
     ]),
     handleTaskShow(columnIdx, taskIdx) {
@@ -118,6 +122,9 @@ export default {
     handleTaskRemove(columnIdx, taskIdx) {
       this.removeTask({ columnIdx, taskIdx });
     },
+    handleColumnRemove(columnIdx) {
+      this.removeColumn({ columnIdx });
+    },
   },
 };
 </script>
@@ -129,14 +136,14 @@ export default {
   margin: -1.25rem 0 1.25rem;
 }
 
-// 窄屏：列轨从横向栅格改为纵向全宽堆叠（is-2 在 Bulma 里仅 ≥769px 生效，
+// 窄屏：列轨从横向栅格改为纵向全宽堆叠（is-3 在 Bulma 里仅 ≥769px 生效，
 // 窄屏下列回落 flex:1 且被 nowrap 文本撑宽，导致横向溢出）
 @media screen and (max-width: 768px) {
   .columns {
     flex-direction: column;
   }
 
-  .column.is-2 {
+  .column.is-3 {
     flex: none;
     width: 100%;
   }
