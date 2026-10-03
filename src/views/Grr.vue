@@ -17,6 +17,7 @@ export default {
 
 <style lang="scss" scoped>
 .board-box {
-  margin: 0 100px;
+  // 桌面保持 100px 出血，窄屏流式收窄（375px 视口约 30px），不再挤成窄条
+  margin: 0 clamp(12px, 8vw, 100px);
 }
 </style>

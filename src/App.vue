@@ -25,7 +25,20 @@
       color: #2c3e50;
 
       &.router-link-exact-active {
-        color: #42b983;
+        // Vue 芽绿压暗到白底 AA（原 #42b983 仅约 2.5:1）
+        color: #2a7d58;
+      }
+    }
+  }
+
+  // 窄屏：收紧导航占位，并把链接撑到可触控的高度
+  @media screen and (max-width: 768px) {
+    #nav {
+      padding: 20px 12px;
+
+      a {
+        display: inline-block;
+        padding: 8px 4px;
       }
     }
   }

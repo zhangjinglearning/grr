@@ -20,7 +20,7 @@ export const useGrrStore = defineStore("grr", {
               id: 22,
               label: "thinking",
               description:
-                "thinking everthing everthing everthing everthing everthing everthing! three line, three line, three line, three line, three line, aaaaaaaaaaaaaaaaaaaaaaa",
+                "thinking everything everything everything everything everything everything! three line, three line, three line, three line, three line, aaaaaaaaaaaaaaaaaaaaaaa",
             },
           ],
           icon: "fa-spinner",
@@ -29,9 +29,9 @@ export const useGrrStore = defineStore("grr", {
           id: 3,
           label: "done",
           list: [
-            { id: 31, label: "played 1 over over", description: "" },
-            { id: 32, label: "played 2 over over", description: "" },
-            { id: 33, label: "played 3 over over", description: "" },
+            { id: 31, label: "played 1 over and over", description: "" },
+            { id: 32, label: "played 2 over and over", description: "" },
+            { id: 33, label: "played 3 over and over", description: "" },
           ],
           icon: "fa-check-circle",
         },
@@ -55,7 +55,7 @@ export const useGrrStore = defineStore("grr", {
         id: Date.now(),
         label: columnName,
         list: [],
-        icon: "fa-bug",
+        icon: "fa-list-ul",
       });
     },
     removeTask({ columnIdx, taskIdx }) {

@@ -8,15 +8,15 @@
         >
           {{ item.label }}
         </div>
-        <a
-          href="#"
+        <button
+          type="button"
           class="card-header-icon has-background-success"
-          aria-label="more options"
+          aria-label="列状态"
         >
           <span class="icon">
             <i :class="['fas', item.icon]"></i>
           </span>
-        </a>
+        </button>
       </div>
       <Container
         class="card-content"
@@ -34,17 +34,15 @@
       </Container>
       <div class="card-footer">
         <div class="field container">
-          <p class="control has-icons-left has-icons-right">
+          <p class="control has-icons-right">
             <input
               class="input"
               type="text"
               placeholder="add task"
+              aria-label="新增任务"
               v-model="taskName"
-              @keyup.enter="handleTaskAdd"
+              @keydown.enter="handleTaskAdd"
             />
-            <span class="icon is-small is-left">
-              <i class="fab fa-twitter"></i>
-            </span>
             <span class="icon is-small is-right">
               <i class="fas fa-check"></i>
             </span>
@@ -82,12 +80,15 @@ export default {
   },
   methods: {
     ...mapActions(useGrrStore, ["saveTask", "dropTask", "beginTaskDrag"]),
-    handleTaskAdd() {
+    handleTaskAdd(event) {
+      if (event.isComposing || event.keyCode === 229) return;
+      const label = this.taskName.trim();
+      if (!label) return;
       this.saveTask({
         columnIdx: this.columnIdx,
         task: {
           id: Date.now(),
-          label: this.taskName,
+          label,
           description: "",
         },
       });

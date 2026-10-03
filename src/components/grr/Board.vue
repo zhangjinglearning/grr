@@ -1,11 +1,14 @@
 <template>
   <div class="container">
-    <div class="title has-text-primary">{{ board.label }}</div>
+    <h1 class="title has-text-primary">{{ board.label }}</h1>
+    <p class="hint has-text-grey-light">in-memory board, refresh to reset</p>
     <Container
       class="columns"
+      :key="isNarrow ? 'v' : 'h'"
       @drop="dropColumn"
-      orientation="horizontal"
-      lock-axis="x"
+      :orientation="isNarrow ? 'vertical' : 'horizontal'"
+      :lock-axis="isNarrow ? 'y' : 'x'"
+      drag-handle-selector=".card-header-title"
       style="display:flex"
     >
       <Draggable
@@ -22,19 +25,17 @@
       </Draggable>
       <div class="column is-2">
         <div class="field">
-          <p class="control has-icons-left has-icons-right">
+          <p class="control has-icons-right">
             <input
               class="input"
               type="text"
               placeholder="add column"
+              aria-label="新增列"
               v-model="columnName"
-              @keyup.enter="handleColumnAdd"
+              @keydown.enter="handleColumnAdd"
             />
-            <span class="icon is-small is-left">
-              <i class="fab fa-google"></i>
-            </span>
             <span class="icon is-small is-right">
-              <i class="fas fa-checked"></i>
+              <i class="fas fa-check"></i>
             </span>
           </p>
         </div>
@@ -66,7 +67,19 @@ export default {
       taskIdx: "",
       task: {},
       columnName: "",
+      isNarrow: false,
     };
+  },
+  created() {
+    this.narrowQuery = window.matchMedia("(max-width: 768px)");
+    this.isNarrow = this.narrowQuery.matches;
+    this.handleNarrowChange = (e) => {
+      this.isNarrow = e.matches;
+    };
+    this.narrowQuery.addEventListener("change", this.handleNarrowChange);
+  },
+  beforeUnmount() {
+    this.narrowQuery.removeEventListener("change", this.handleNarrowChange);
   },
   computed: {
     ...mapState(useGrrStore, ["board"]),
@@ -95,8 +108,11 @@ export default {
       this.task = {};
       this.flag = false;
     },
-    handleColumnAdd() {
-      this.saveColumn({ columnName: this.columnName });
+    handleColumnAdd(event) {
+      if (event.isComposing || event.keyCode === 229) return;
+      const columnName = this.columnName.trim();
+      if (!columnName) return;
+      this.saveColumn({ columnName });
       this.columnName = "";
     },
     handleTaskRemove(columnIdx, taskIdx) {
@@ -106,4 +122,23 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+// 标题下的轻提示：负 margin 抵消 .title 的 1.5rem 底距，让提示贴住标题；
+// 字号沿用正文 1rem（DESIGN.md 规则：不新增字号档位），仅以灰白弱化
+.hint {
+  margin: -1.25rem 0 1.25rem;
+}
+
+// 窄屏：列轨从横向栅格改为纵向全宽堆叠（is-2 在 Bulma 里仅 ≥769px 生效，
+// 窄屏下列回落 flex:1 且被 nowrap 文本撑宽，导致横向溢出）
+@media screen and (max-width: 768px) {
+  .columns {
+    flex-direction: column;
+  }
+
+  .column.is-2 {
+    flex: none;
+    width: 100%;
+  }
+}
+</style>

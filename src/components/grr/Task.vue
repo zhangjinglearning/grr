@@ -9,7 +9,15 @@
     <div v-if="task.description" class="one-line has-text-black has-text-left">
       {{ task.description }}
     </div>
-    <button class="delete is-large" @click="$emit('emitTaskRemove')"></button>
+    <button
+      v-if="!confirming"
+      class="delete is-large"
+      aria-label="删除任务"
+      @click="armDelete"
+    ></button>
+    <button v-else class="delete-confirm" @click="confirmDelete">
+      确认删除?
+    </button>
   </span>
 </template>
 
@@ -21,6 +29,26 @@ export default {
     task: {
       type: Object,
       required: true,
+    },
+  },
+  data() {
+    return {
+      confirming: false,
+    };
+  },
+  beforeUnmount() {
+    clearTimeout(this.confirmTimer);
+  },
+  methods: {
+    armDelete() {
+      this.confirming = true;
+      this.confirmTimer = setTimeout(() => {
+        this.confirming = false;
+      }, 3000);
+    },
+    confirmDelete() {
+      clearTimeout(this.confirmTimer);
+      this.$emit("emitTaskRemove");
     },
   },
 };
@@ -38,5 +66,45 @@ export default {
   margin: 10px 0;
   display: flex;
   flex-direction: column;
+}
+
+.delete-confirm {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  background-color: #0a0a0a;
+  border: none;
+  border-radius: 9999px;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  font-size: 1rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+// 触屏：delete 圆钮与确认条达到 44px 触控目标（桌面鼠标不受影响）。
+// Bulma 对 .delete 同时锁了 min/max-width/height，这里须四件套一起覆盖
+@media (pointer: coarse) {
+  .tile.notification {
+    padding-right: 3.5rem;
+  }
+
+  .tile .delete {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    max-width: 44px;
+    max-height: 44px;
+  }
+
+  .delete-confirm {
+    height: 44px;
+  }
 }
 </style>
