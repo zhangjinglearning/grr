@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+  <!-- 16px 迷你游戏桌：石墨桌面 + 积木蓝列 + 泡泡糖青列头 + 奶油黄任务卡，全部复用角色色 -->
+  <rect width="16" height="16" rx="3" fill="#363636"/>
+  <rect x="3" y="3" width="10" height="10" rx="1" fill="#485fc7"/>
+  <rect x="3" y="3" width="10" height="3.5" rx="1" fill="#00d1b2"/>
+  <rect x="4.5" y="7.5" width="7" height="2.5" rx="0.5" fill="#ffe08a"/>
+</svg>

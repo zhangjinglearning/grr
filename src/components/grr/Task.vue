@@ -18,11 +18,15 @@
     <button
       v-else
       class="delete-confirm"
-      aria-live="assertive"
       @click="confirmDelete"
     >
       sure? (3s)
     </button>
+    <!-- aria-live 挂在被插入的按钮上播报不可靠，独立 live region 才是惯例；
+    is-sr-only 是 Bulma 自带的视觉隐藏 -->
+    <span class="is-sr-only" aria-live="assertive">
+      {{ confirming ? "确认删除任务？3 秒后自动回退" : "" }}
+    </span>
   </span>
 </template>
 
@@ -47,11 +51,14 @@ export default {
   methods: {
     armDelete() {
       this.confirming = true;
+      this.armedAt = Date.now();
       this.confirmTimer = setTimeout(() => {
         this.confirming = false;
       }, 3000);
     },
     confirmDelete() {
+      // 连击护栏：确认条与圆钮同位，双击的第二击会直达删除——300ms 内视为误触
+      if (Date.now() - this.armedAt < 300) return;
       clearTimeout(this.confirmTimer);
       this.$emit("emitTaskRemove");
     },
@@ -93,6 +100,14 @@ export default {
   flex-direction: column;
   // 整卡可拖：拿起来之前先给出 grab 预告（按钮自身保持 pointer，点=编辑、拖=卡体）
   cursor: grab;
+}
+
+// hover 底色轻微加深（#ffdc7d 是 Bulma warning 的官方 hover 值），与 grab 预告
+// 凑成"这块可以拿"的完整暗示；hover:hover 守卫避免触屏粘滞
+@media (hover: hover) {
+  .tile.notification:hover {
+    background-color: #ffdc7d;
+  }
 }
 
 .delete-confirm {

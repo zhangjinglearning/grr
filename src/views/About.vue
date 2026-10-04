@@ -8,5 +8,9 @@
       <a href="https://github.com/zhangjinglearning/grr">GitHub</a> ·
       live demo at <a href="https://grr.onrender.com">grr.onrender.com</a>
     </p>
+    <!-- 读完故事送回桌面：Exit CTA，积木蓝实心与 Dialog Submit 同语言 -->
+    <p class="mt-4">
+      <router-link to="/grr" class="button is-link">back to the table</router-link>
+    </p>
   </div>
 </template>

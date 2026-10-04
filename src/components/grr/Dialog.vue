@@ -41,6 +41,10 @@
             </button>
           </div>
         </div>
+        <!-- 独立 live region：discard 确认文案变化时主动播报（不挂在按钮上） -->
+        <span class="is-sr-only" aria-live="assertive">
+          {{ confirmingDiscard ? "确认丢弃未保存的修改？3 秒后自动回退" : "" }}
+        </span>
       </div>
     </div>
     <button
@@ -135,13 +139,18 @@ export default {
       }
     },
     handleCloseClick() {
-      if (this.isDirty && !this.confirmingDiscard) {
-        this.confirmingDiscard = true;
-        clearTimeout(this.discardTimer);
-        this.discardTimer = setTimeout(() => {
-          this.confirmingDiscard = false;
-        }, 3000);
-        return;
+      if (this.isDirty) {
+        if (!this.confirmingDiscard) {
+          this.confirmingDiscard = true;
+          this.armedAt = Date.now();
+          clearTimeout(this.discardTimer);
+          this.discardTimer = setTimeout(() => {
+            this.confirmingDiscard = false;
+          }, 3000);
+          return;
+        }
+        // 连击护栏：armed 后 300ms 内的关闭动作（双击 Cancel/Esc）视为误触
+        if (Date.now() - this.armedAt < 300) return;
       }
       clearTimeout(this.discardTimer);
       this.$emit("update:flag", false);

@@ -29,11 +29,14 @@
         <button
           v-else
           class="delete-confirm"
-          aria-live="assertive"
           @click="confirmDelete"
         >
           delete '{{ item.label }}'? (3s)
         </button>
+        <!-- 独立 live region（挂在被插入的按钮上播报不可靠），文案带上列名 -->
+        <span class="is-sr-only" aria-live="assertive">
+          {{ confirming ? `确认删除列 ${item.label}？3 秒后自动回退` : "" }}
+        </span>
       </div>
       <Container
         class="card-content"
@@ -129,11 +132,14 @@ export default {
 
     armDelete() {
       this.confirming = true;
+      this.armedAt = Date.now();
       this.confirmTimer = setTimeout(() => {
         this.confirming = false;
       }, 3000);
     },
     confirmDelete() {
+      // 连击护栏：确认条盖住的正是圆钮原位，300ms 内的第二击视为误触
+      if (Date.now() - this.armedAt < 300) return;
       clearTimeout(this.confirmTimer);
       this.$emit("emitColumnRemove", this.columnIdx);
     },
