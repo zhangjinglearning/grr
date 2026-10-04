@@ -15,7 +15,12 @@
       aria-label="删除任务"
       @click="armDelete"
     ></button>
-    <button v-else class="delete-confirm" @click="confirmDelete">
+    <button
+      v-else
+      class="delete-confirm"
+      aria-live="assertive"
+      @click="confirmDelete"
+    >
       sure?
     </button>
   </span>
@@ -55,19 +60,25 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+// Bulma .button 的 justify-content:center 会让长文本双端平切、省略号失效
+// （"played 1 over and over" 曾显示为 "ayed 1 over and ov"），必须左起
 .one-line {
+  justify-content: flex-start;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  text-align: left;
   width: 100%;
 }
 
-// 描述两行封顶：读板不点开也能看到大部分内容，长文卡自然更高
+// 描述两行封顶：读板不点开也能看到大部分内容，长文卡自然更高；
+// break-word 防超长无空格串在 -webkit-box 下横向溢出色块
 .desc {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   overflow: hidden;
+  overflow-wrap: break-word;
   width: 100%;
 }
 

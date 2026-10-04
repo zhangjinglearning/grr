@@ -41,4 +41,35 @@
       }
     }
   }
+
+  // Bulma 对 delete 家族 outline:none 且无 focus-visible 补偿，Tab 焦点会隐形；
+  // 墨黑环在黄卡（14:1）与青列头（6:1）上都成立
+  .delete:focus-visible,
+  .modal-close:focus-visible,
+  .delete-confirm:focus-visible {
+    outline: 2px solid #0a0a0a;
+    outline-offset: 2px;
+  }
+
+  // 空输入回车的瞬时反馈（shake + danger 红边），替代静默无反应；
+  // danger 是状态色不是第六块积木（一卡一色规则不破）
+  .input-empty-flash {
+    animation: empty-shake 0.3s ease;
+    border-color: #f14668;
+  }
+
+  @keyframes empty-shake {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+
+    25% {
+      transform: translateX(-4px);
+    }
+
+    75% {
+      transform: translateX(4px);
+    }
+  }
 </style>

@@ -4,6 +4,9 @@
     <p class="hint has-text-grey-light">
       drag &amp; drop · in-memory board · refresh to reset
     </p>
+    <p v-if="!board.columns.length" class="hint has-text-grey-light">
+      grr~ empty table — add a column
+    </p>
     <Container
       class="columns"
       :key="isNarrow ? 'v' : 'h'"
@@ -28,18 +31,16 @@
       </Draggable>
       <div class="column is-3">
         <div class="field">
-          <p class="control has-icons-right">
+          <p class="control">
             <input
               class="input"
+              :class="{ 'input-empty-flash': emptyFlash }"
               type="text"
               placeholder="add column"
               aria-label="新增列"
               v-model="columnName"
               @keydown.enter="handleColumnAdd"
             />
-            <span class="icon is-small is-right">
-              <i class="fas fa-check"></i>
-            </span>
           </p>
         </div>
       </div>
@@ -70,6 +71,7 @@ export default {
       taskIdx: "",
       task: {},
       columnName: "",
+      emptyFlash: false,
       isNarrow: false,
     };
   },
@@ -83,6 +85,7 @@ export default {
   },
   beforeUnmount() {
     this.narrowQuery.removeEventListener("change", this.handleNarrowChange);
+    clearTimeout(this.flashTimer);
   },
   computed: {
     ...mapState(useGrrStore, ["board"]),
@@ -115,9 +118,20 @@ export default {
     handleColumnAdd(event) {
       if (event.isComposing || event.keyCode === 229) return;
       const columnName = this.columnName.trim();
-      if (!columnName) return;
+      if (!columnName) {
+        this.flashEmpty();
+        return;
+      }
       this.saveColumn({ columnName });
       this.columnName = "";
+    },
+    // 空输入回车：shake 一瞬告诉用户"按了、但没东西可加"
+    flashEmpty() {
+      this.emptyFlash = true;
+      clearTimeout(this.flashTimer);
+      this.flashTimer = setTimeout(() => {
+        this.emptyFlash = false;
+      }, 500);
     },
     handleTaskRemove(columnIdx, taskIdx) {
       this.removeTask({ columnIdx, taskIdx });

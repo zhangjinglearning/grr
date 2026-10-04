@@ -26,8 +26,13 @@
         >
           <span class="delete is-medium" aria-hidden="true"></span>
         </button>
-        <button v-else class="delete-confirm" @click="confirmDelete">
-          delete column?
+        <button
+          v-else
+          class="delete-confirm"
+          aria-live="assertive"
+          @click="confirmDelete"
+        >
+          delete '{{ item.label }}'?
         </button>
       </div>
       <Container
@@ -46,18 +51,16 @@
       </Container>
       <div class="card-footer">
         <div class="field container">
-          <p class="control has-icons-right">
+          <p class="control">
             <input
               class="input"
+              :class="{ 'input-empty-flash': emptyFlash }"
               type="text"
               placeholder="add task"
               aria-label="新增任务"
               v-model="taskName"
               @keydown.enter="handleTaskAdd"
             />
-            <span class="icon is-small is-right">
-              <i class="fas fa-check"></i>
-            </span>
           </p>
         </div>
       </div>
@@ -89,17 +92,22 @@ export default {
     return {
       taskName: "",
       confirming: false,
+      emptyFlash: false,
     };
   },
   beforeUnmount() {
     clearTimeout(this.confirmTimer);
+    clearTimeout(this.flashTimer);
   },
   methods: {
     ...mapActions(useGrrStore, ["saveTask", "dropTask", "beginTaskDrag"]),
     handleTaskAdd(event) {
       if (event.isComposing || event.keyCode === 229) return;
       const label = this.taskName.trim();
-      if (!label) return;
+      if (!label) {
+        this.flashEmpty();
+        return;
+      }
       this.saveTask({
         columnIdx: this.columnIdx,
         task: {
@@ -129,6 +137,15 @@ export default {
       clearTimeout(this.confirmTimer);
       this.$emit("emitColumnRemove", this.columnIdx);
     },
+
+    // 空输入回车：shake 一瞬告诉用户"按了、但没东西可加"
+    flashEmpty() {
+      this.emptyFlash = true;
+      clearTimeout(this.flashTimer);
+      this.flashTimer = setTimeout(() => {
+        this.emptyFlash = false;
+      }, 500);
+    },
   },
 };
 </script>
@@ -140,17 +157,24 @@ export default {
   opacity: 0.45;
 }
 
-// 两段式删列确认条，与 Task 的确认条同范式；card-header 默认无定位
+// 删除 cell 的键盘焦点环（Bulma 对 delete 家族无 focus-visible 补偿）
+.card-header-icon:focus-visible {
+  outline: 2px solid #0a0a0a;
+  outline-offset: -2px;
+}
+
+// 两段式删列确认条，与 Task 的确认条同范式；card-header 默认无定位。
+// 盖满整个列头：确认期间 grip 不可拖，列名也写进文案里
 .card-header {
   position: relative;
 }
 
 .delete-confirm {
   position: absolute;
-  top: 8px;
+  top: 4px;
+  bottom: 4px;
   left: 8px;
   right: 8px;
-  height: 32px;
   align-items: center;
   justify-content: center;
   background-color: #0a0a0a;
@@ -161,11 +185,14 @@ export default {
   display: flex;
   font-size: 1rem;
   font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-// 触屏：删除圆钮与确认条达到 44px 触控目标，与任务卡同款；
-// Bulma 对 .delete 锁了 min/max-width/height，须四件套一起覆盖
+// 触屏：删除圆钮达到 44px 触控目标，与任务卡同款；
+// Bulma 对 .delete 锁了 min/max-width/height，须四件套一起覆盖。
+// 确认条已 top/bottom 自适应盖满列头，无需再撑
 @media (pointer: coarse) {
   .card-header-icon .delete {
     width: 44px;
@@ -174,10 +201,6 @@ export default {
     min-height: 44px;
     max-width: 44px;
     max-height: 44px;
-  }
-
-  .delete-confirm {
-    height: 44px;
   }
 }
 </style>

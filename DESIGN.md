@@ -9,6 +9,7 @@ colors:
   playtable-graphite: "#363636"
   ink-black: "#0a0a0a"
   slate-text: "#2c3e50"
+  error-border: "#f14668"
   paper-white: "#ffffff"
   input-border: "#dbdbdb"
 typography:
@@ -59,7 +60,7 @@ components:
     typography: "{typography.task-label}"
     rounded: "{rounded.md}"
   task-delete-button:
-    backgroundColor: "{colors.ink-black}"
+    backgroundColor: "rgba(10,10,10,0.2)"
     textColor: "{colors.paper-white}"
     rounded: "{rounded.pill}"
     size: "32px"
@@ -120,8 +121,9 @@ components:
 ### Neutral
 
 - **石墨桌布** (#363636)：看板外框背景与任务标签按钮底色，整张桌子的底座。
-- **墨黑** (#0a0a0a)：delete 圆钮，以及 Bulma 阴影的基色。
+- **墨黑** (#0a0a0a)：确认条底色、焦点环，以及 Bulma 阴影的基色。delete 圆钮本体是 Bulma 默认的 rgba(10,10,10,0.2) 半透明墨——armed（确认条）用纯墨，语义是"确认态更重"。
 - **页岩灰** (#2c3e50)：全局正文文字色（App.vue 覆盖 Bulma 默认），也是导航文字色。
+- **错误态边框** (Bulma danger #f14668)：仅用于空输入瞬时反馈（shake + 红边 0.5s）——是状态色不是第六块积木，一卡一色规则不受影响。
 - **纸白** (#ffffff)：输入框、Dialog 面板、按钮文字。
 - **输入框边灰** (#dbdbdb)：输入框与描边控件的 1px 边框。
 
@@ -149,7 +151,7 @@ components:
 
 ## Layout
 
-石墨桌面（深色 box，左右 clamp(12px, 6vw, 72px) 流式出血——桌面 72px，窄屏收窄）承托一条横向列轨：Bulma 12 列栅格、每列 is-3（25% 宽，3 列 + add column 输入框恰好铺满一排），由平滑拖拽容器横向排布。列内任务纵向堆叠，间距 10px；每列尾部固定一个新增输入框。顶部导航 30px padding，占位极小。整体密度宽松，色块靠自身色彩区分彼此，不依赖留白节奏。窄屏（≤768px）时列轨转为纵向全宽堆叠（自定义媒体查询：Bulma 的 is-3 栅格仅 ≥769px 生效，裸 flex 会横向溢出），列拖拽方向随之切为纵向（vertical/lock y），触屏指针下 delete 圆钮放大到 44px 触控目标。
+石墨桌面（深色 box，左右 clamp(12px, 6vw, 72px) 流式出血——桌面 72px，窄屏收窄）承托一条横向列轨：Bulma 12 列栅格、每列 is-3（25% 宽，3 列 + add column 输入框恰好铺满一排），由平滑拖拽容器横向排布。列内任务纵向堆叠，间距 10px；每列尾部固定一个新增输入框。顶部导航 30px padding，占位极小。整体密度宽松，色块靠自身色彩区分彼此，不依赖留白节奏。空板状态一行 roar 文案（"grr~ empty table — add a column"），是品牌声音在界面里的唯一出场。窄屏（≤768px）时列轨转为纵向全宽堆叠（自定义媒体查询：Bulma 的 is-3 栅格仅 ≥769px 生效，裸 flex 会横向溢出），列拖拽方向随之切为纵向（vertical/lock y），触屏指针下 delete 圆钮放大到 44px 触控目标。
 
 ## Elevation & Depth
 
@@ -173,12 +175,12 @@ components:
 - **任务标签按钮:** 石墨底 (#363636) + 白字 700 粗体；它本身就是任务文本的载体，点击打开编辑弹窗
 - **Submit:** 积木蓝底白字（Dialog 内确认）
 - **Cancel:** 白底积木蓝字（is-light 变体）
-- **Delete:** 墨黑完整圆钮，伪元素画 ×——任务卡 32px、列头 24px；两段式确认（sure? / delete column? 覆层，3 秒未确认自动回退）
-- **Hover / Focus:** Bulma 默认——底色轻微加深；focus ring `0 0 0 0.125em rgba(72,95,199,.25)`
+- **Delete:** Bulma 默认半透明墨圆钮（rgba(10,10,10,.2)），伪元素画 ×——任务卡 32px、列头 24px；两段式确认覆层（sure? / delete '列名'?，纯墨黑、盖满列头、3 秒未确认自动回退），确认期间 grip 不可拖
+- **Hover / Focus:** Bulma 默认——底色轻微加深；focus ring `0 0 0 0.125em rgba(72,95,199,.25)`；delete 家族（Bulma 给了 outline:none）用墨黑 focus-visible 环 2px 补偿，Tab 焦点不隐形
 
 ### 任务卡 Task Tile（signature）
 
-奶油黄 notification 平铺块，4px 圆角，padding `1.25rem 2.5rem 1.25rem 1.5rem`（右侧让位给绝对定位的 delete 钮）。内部纵向堆叠：标签按钮在上（单行省略 overflow ellipsis）、描述在下（最多两行 line-clamp，长文卡自然更高）。它是展示也是交互——整块可点、可拖、可删。
+奶油黄 notification 平铺块，4px 圆角，padding `1.25rem 2.5rem 1.25rem 1.5rem`（右侧让位给绝对定位的 delete 钮）。内部纵向堆叠：标签按钮在上（单行省略，左起——Bulma button 的居中对齐会让长文本双端平切）、描述在下（最多两行 line-clamp，长文卡自然更高）。它是展示也是交互——整块可点、可拖、可删。
 
 ### 列卡 Column Card（signature）
 
@@ -188,11 +190,11 @@ components:
 
 - **Style:** 纸白底、1px #dbdbdb 边框、4px 圆角、Bulma 内阴影（`inset 0 1px 2px rgba(10,10,10,.1)`）
 - **Focus:** 边框转积木蓝 + `0 0 0 0.125em rgba(72,95,199,.25)` 光晕
-- **提交方式:** 回车即提交（add task / add column），无提交按钮
+- **提交方式:** 回车即提交（add task / add column），无提交按钮；空输入回车 shake + danger 红边一瞬，不再静默
 
 ### Dialog
 
-半透明墨黑遮罩（rgba(10,10,10,.86)）压住全屏，纸白 box（6px 圆角、浅阴影）居中。字段纵向排列（Task / Description），粗体标签；底部按钮对居中（积木蓝 Submit + 白底 Cancel）。
+半透明墨黑遮罩（rgba(10,10,10,.86)）压住全屏，纸白 box（6px 圆角、浅阴影）居中。字段纵向排列（Task / Description），粗体标签；底部按钮对居中（积木蓝 Submit + 白底 Cancel）。键盘契约：打开自动聚焦 label 输入框，Tab 焦点陷阱留在弹窗内，关闭（含提交后）焦点还给触发元素；空提交 shake + 红边一瞬；有未保存改动时关闭走两段式（Cancel 变 discard?，3 秒回退），Esc/遮罩/Cancel 同规则。
 
 ### Navigation
 
