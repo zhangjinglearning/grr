@@ -4,7 +4,7 @@
       class="button is-dark has-text-weight-bold one-line"
       @click="$emit('emitTaskShow')"
     >
-      {{ task.label }}
+      <span class="one-line-text">{{ task.label }}</span>
     </button>
     <div v-if="task.description" class="desc has-text-black has-text-left">
       {{ task.description }}
@@ -21,7 +21,7 @@
       aria-live="assertive"
       @click="confirmDelete"
     >
-      sure?
+      sure? (3s)
     </button>
   </span>
 </template>
@@ -60,15 +60,20 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-// Bulma .button 的 justify-content:center 会让长文本双端平切、省略号失效
-// （"played 1 over and over" 曾显示为 "ayed 1 over and ov"），必须左起
+// Bulma .button 是 inline-flex 容器，text-overflow 对容器本身无效——
+// 省略号必须落在块级的 span 上（min-width:0 才允许 flex 子项收缩到溢出）
 .one-line {
   justify-content: flex-start;
+  width: 100%;
+}
+
+.one-line-text {
+  display: block;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   text-align: left;
-  width: 100%;
 }
 
 // 描述两行封顶：读板不点开也能看到大部分内容，长文卡自然更高；
@@ -86,6 +91,8 @@ export default {
   margin: 10px 0;
   display: flex;
   flex-direction: column;
+  // 整卡可拖：拿起来之前先给出 grab 预告（按钮自身保持 pointer，点=编辑、拖=卡体）
+  cursor: grab;
 }
 
 .delete-confirm {

@@ -32,7 +32,7 @@
           aria-live="assertive"
           @click="confirmDelete"
         >
-          delete '{{ item.label }}'?
+          delete '{{ item.label }}'? (3s)
         </button>
       </div>
       <Container

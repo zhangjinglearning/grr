@@ -37,7 +37,7 @@
           </div>
           <div class="control">
             <button class="button is-link is-light" @click="handleCloseClick">
-              {{ confirmingDiscard ? "discard?" : "Cancel" }}
+              {{ confirmingDiscard ? "discard? (3s)" : "Cancel" }}
             </button>
           </div>
         </div>

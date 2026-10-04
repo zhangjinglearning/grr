@@ -175,12 +175,12 @@ components:
 - **任务标签按钮:** 石墨底 (#363636) + 白字 700 粗体；它本身就是任务文本的载体，点击打开编辑弹窗
 - **Submit:** 积木蓝底白字（Dialog 内确认）
 - **Cancel:** 白底积木蓝字（is-light 变体）
-- **Delete:** Bulma 默认半透明墨圆钮（rgba(10,10,10,.2)），伪元素画 ×——任务卡 32px、列头 24px；两段式确认覆层（sure? / delete '列名'?，纯墨黑、盖满列头、3 秒未确认自动回退），确认期间 grip 不可拖
+- **Delete:** Bulma 默认半透明墨圆钮（rgba(10,10,10,.2)），伪元素画 ×——任务卡 32px、列头 24px；两段式确认覆层（sure? / delete '列名'?，文案带 (3s) 告知自动回退窗口，纯墨黑、盖满列头、3 秒未确认自动回退），确认期间 grip 不可拖
 - **Hover / Focus:** Bulma 默认——底色轻微加深；focus ring `0 0 0 0.125em rgba(72,95,199,.25)`；delete 家族（Bulma 给了 outline:none）用墨黑 focus-visible 环 2px 补偿，Tab 焦点不隐形
 
 ### 任务卡 Task Tile（signature）
 
-奶油黄 notification 平铺块，4px 圆角，padding `1.25rem 2.5rem 1.25rem 1.5rem`（右侧让位给绝对定位的 delete 钮）。内部纵向堆叠：标签按钮在上（单行省略，左起——Bulma button 的居中对齐会让长文本双端平切）、描述在下（最多两行 line-clamp，长文卡自然更高）。它是展示也是交互——整块可点、可拖、可删。
+奶油黄 notification 平铺块，4px 圆角，padding `1.25rem 2.5rem 1.25rem 1.5rem`（右侧让位给绝对定位的 delete 钮）。内部纵向堆叠：标签按钮在上（文本包在块级 span 里做单行省略——Bulma button 是 flex 容器，容器上的 text-overflow 无效，省略号必须落在 span 上）、描述在下（最多两行 line-clamp，长文卡自然更高）。它是展示也是交互——整块可点、可拖（cursor:grab，按钮自身保持 pointer）、可删。
 
 ### 列卡 Column Card（signature）
 
@@ -205,7 +205,7 @@ components:
 ### Do:
 
 - **Do** 保持一卡一色——层级问题先用饱和色块回答
-- **Do** 保持列头 cursor:grab，拖拽手感是产品核心
+- **Do** 保持列头与任务卡的 cursor:grab，拖拽手感是产品核心
 - **Do** 任务标签单行省略、描述两行封顶（line-clamp），保持色块紧凑
 - **Do** 用字重做层级：700 标签 / 600 标题 / 400 正文
 
