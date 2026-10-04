@@ -127,11 +127,16 @@ export default {
     },
     // 空输入回车：shake 一瞬告诉用户"按了、但没东西可加"
     flashEmpty() {
-      this.emptyFlash = true;
-      clearTimeout(this.flashTimer);
-      this.flashTimer = setTimeout(() => {
-        this.emptyFlash = false;
-      }, 500);
+      this.emptyFlash = false;
+      this.$nextTick(() => {
+        // 读一次布局强制重排，否则半秒内连按第二次时 class 未摘干净、动画不重播
+        void this.$el.offsetWidth;
+        this.emptyFlash = true;
+        clearTimeout(this.flashTimer);
+        this.flashTimer = setTimeout(() => {
+          this.emptyFlash = false;
+        }, 500);
+      });
     },
     handleTaskRemove(columnIdx, taskIdx) {
       this.removeTask({ columnIdx, taskIdx });
@@ -144,6 +149,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+// 超过 4 列（is-3 × 4 = 100%）时容器是 nowrap flex，不换行只会横向溢出桌面，
+// 让列轨在石墨桌面内横向滚动（Bulma 只有 .is-multiline 才 wrap，本容器不加）
+.columns {
+  overflow-x: auto;
+}
+
 // 标题下的轻提示：负 margin 抵消 .title 的 1.5rem 底距，让提示贴住标题；
 // 字号沿用正文 1rem（DESIGN.md 规则：不新增字号档位），仅以灰白弱化
 .hint {

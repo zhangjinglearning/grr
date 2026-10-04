@@ -151,7 +151,7 @@ components:
 
 ## Layout
 
-石墨桌面（深色 box，左右 clamp(12px, 6vw, 72px) 流式出血——桌面 72px，窄屏收窄）承托一条横向列轨：Bulma 12 列栅格、每列 is-3（25% 宽，3 列 + add column 输入框恰好铺满一排），由平滑拖拽容器横向排布。列内任务纵向堆叠，间距 10px；每列尾部固定一个新增输入框。顶部导航 30px padding，占位极小。整体密度宽松，色块靠自身色彩区分彼此，不依赖留白节奏。空板状态一行 roar 文案（"grr~ empty table — add a column"），是品牌声音在界面里的唯一出场。窄屏（≤768px）时列轨转为纵向全宽堆叠（自定义媒体查询：Bulma 的 is-3 栅格仅 ≥769px 生效，裸 flex 会横向溢出），列拖拽方向随之切为纵向（vertical/lock y），触屏指针下 delete 圆钮放大到 44px 触控目标。
+石墨桌面（深色 box，左右 clamp(12px, 6vw, 72px) 流式出血——桌面 72px，窄屏收窄）承托一条横向列轨：Bulma 12 列栅格、每列 is-3（25% 宽，3 列 + add column 输入框恰好铺满一排；容器 nowrap 不换行，超过 4 列时列轨在桌面内横向滚动），由平滑拖拽容器横向排布。列内任务纵向堆叠，间距 10px；每列尾部固定一个新增输入框。顶部导航 30px padding，占位极小。整体密度宽松，色块靠自身色彩区分彼此，不依赖留白节奏。空板状态一行 roar 文案（"grr~ empty table — add a column"），是品牌声音在界面里的唯一出场。窄屏（≤768px）时列轨转为纵向全宽堆叠（自定义媒体查询：Bulma 的 is-3 栅格仅 ≥769px 生效，裸 flex 会横向溢出），列拖拽方向随之切为纵向（vertical/lock y），触屏指针下 delete 圆钮放大到 44px 触控目标。
 
 ## Elevation & Depth
 
@@ -184,7 +184,7 @@ components:
 
 ### 列卡 Column Card（signature）
 
-积木蓝 card，4px 圆角，三段式：泡泡糖青列头（石墨深字 #363636——Bulma 背景类不改文字色，card-header-title 保持默认深字；bold，cursor:grab——拖动整列就抓这里，标题左侧 grip 图标标出抓取点，触屏上它是唯一 affordance）、透明内容区（1.5rem padding，任务在此堆叠）、列尾新增输入框。列头右侧恐龙绿状态图标（inbox / spinner / check-circle，纯装饰非按钮），最右 24px 墨黑删除圆钮（两段式确认删列）。
+积木蓝 card，4px 圆角，三段式：泡泡糖青列头（石墨深字 #363636——Bulma 背景类不改文字色，card-header-title 保持默认深字；bold，cursor:grab——拖动整列就抓这里，标题左侧 grip 图标标出抓取点，触屏上它是唯一 affordance）、透明内容区（1.5rem padding，任务在此堆叠）、列尾新增输入框。列头右侧恐龙绿状态图标（inbox / hammer / check-circle，纯装饰非按钮——hammer 表"进行中"，不用 spinner 免得被读作加载中），最右 24px 墨黑删除圆钮（两段式确认删列）。
 
 ### Inputs / Fields
 

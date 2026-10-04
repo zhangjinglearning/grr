@@ -140,11 +140,16 @@ export default {
 
     // 空输入回车：shake 一瞬告诉用户"按了、但没东西可加"
     flashEmpty() {
-      this.emptyFlash = true;
-      clearTimeout(this.flashTimer);
-      this.flashTimer = setTimeout(() => {
-        this.emptyFlash = false;
-      }, 500);
+      this.emptyFlash = false;
+      this.$nextTick(() => {
+        // 读一次布局强制重排，否则半秒内连按第二次时 class 未摘干净、动画不重播
+        void this.$el.offsetWidth;
+        this.emptyFlash = true;
+        clearTimeout(this.flashTimer);
+        this.flashTimer = setTimeout(() => {
+          this.emptyFlash = false;
+        }, 500);
+      });
     },
   },
 };

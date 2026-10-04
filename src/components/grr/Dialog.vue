@@ -148,11 +148,16 @@ export default {
     },
     // 空输入提交：shake 一瞬 + 红边，替代静默无反应
     flashEmpty() {
-      this.emptyFlash = true;
-      clearTimeout(this.flashTimer);
-      this.flashTimer = setTimeout(() => {
-        this.emptyFlash = false;
-      }, 500);
+      this.emptyFlash = false;
+      this.$nextTick(() => {
+        // 读一次布局强制重排，否则半秒内连按第二次时 class 未摘干净、动画不重播
+        void this.$el.offsetWidth;
+        this.emptyFlash = true;
+        clearTimeout(this.flashTimer);
+        this.flashTimer = setTimeout(() => {
+          this.emptyFlash = false;
+        }, 500);
+      });
     },
     handleSubmitClick(event) {
       if (event && (event.isComposing || event.keyCode === 229)) return;

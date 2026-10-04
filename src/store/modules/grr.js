@@ -23,7 +23,7 @@ export const useGrrStore = defineStore("grr", {
                 "thinking everything everything everything everything everything everything! three line, three line, three line, three line, three line, aaaaaaaaaaaaaaaaaaaaaaa",
             },
           ],
-          icon: "fa-spinner",
+          icon: "fa-hammer",
         },
         {
           id: 3,
