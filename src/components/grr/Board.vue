@@ -33,6 +33,7 @@
         <div class="field">
           <p class="control">
             <input
+              ref="addColumnInput"
               class="input"
               :class="{ 'input-empty-flash': emptyFlash }"
               type="text"
@@ -124,6 +125,12 @@ export default {
       }
       this.saveColumn({ columnName });
       this.columnName = "";
+      // 第 4 列起列轨横向滚动，新列和 add-column 输入框都排在滚动区末尾，
+      // 不滚过去的话两者都留在视口外
+      this.$nextTick(() => {
+        const track = this.$el.querySelector(".columns");
+        track?.scrollTo({ left: track.scrollWidth, behavior: "smooth" });
+      });
     },
     // 空输入回车：shake 一瞬告诉用户"按了、但没东西可加"
     flashEmpty() {
@@ -141,8 +148,19 @@ export default {
     handleTaskRemove(columnIdx, taskIdx) {
       this.removeTask({ columnIdx, taskIdx });
     },
+    // 列删除后组件卸载、焦点会掉到 body：把焦点落到同位邻居列头的删除钮
+    // （被删的是最后一列则落前一列），板被删空则落新增列输入框
     handleColumnRemove(columnIdx) {
       this.removeColumn({ columnIdx });
+      this.$nextTick(() => {
+        const cards = this.$el.querySelectorAll(".column.is-3 .card");
+        if (!cards.length) {
+          this.$refs.addColumnInput?.focus();
+          return;
+        }
+        const card = cards[Math.min(columnIdx, cards.length - 1)];
+        card.querySelector("button.card-header-icon")?.focus();
+      });
     },
   },
 };

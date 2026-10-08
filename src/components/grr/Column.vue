@@ -19,6 +19,7 @@
         </span>
         <button
           v-if="!confirming"
+          ref="deleteBtn"
           type="button"
           class="card-header-icon has-background-primary"
           aria-label="删除列"
@@ -28,7 +29,9 @@
         </button>
         <button
           v-else
+          ref="confirmBtn"
           class="delete-confirm"
+          :class="{ 'confirm-guard-flash': guardFlash }"
           @click="confirmDelete"
         >
           delete '{{ item.label }}'? (3s)
@@ -48,7 +51,7 @@
           <Task
             :task="task"
             @emitTaskShow="$emit('emitTaskDialogShow', columnIdx, $taskIdx)"
-            @emitTaskRemove="$emit('emitTaskDialogRemove', columnIdx, $taskIdx)"
+            @emitTaskRemove="handleTaskRemove($taskIdx)"
           />
         </Draggable>
       </Container>
@@ -56,6 +59,7 @@
         <div class="field container">
           <p class="control">
             <input
+              ref="addTaskInput"
               class="input"
               :class="{ 'input-empty-flash': emptyFlash }"
               type="text"
@@ -95,11 +99,13 @@ export default {
     return {
       taskName: "",
       confirming: false,
+      guardFlash: false,
       emptyFlash: false,
     };
   },
   beforeUnmount() {
     clearTimeout(this.confirmTimer);
+    clearTimeout(this.guardTimer);
     clearTimeout(this.flashTimer);
   },
   methods: {
@@ -134,14 +140,49 @@ export default {
       this.confirming = true;
       this.armedAt = Date.now();
       this.confirmTimer = setTimeout(() => {
+        // 3 秒回退时若焦点还在确认条上（键盘路径），还给删除钮而不是掉到 body
+        const reclaim = document.activeElement === this.$refs.confirmBtn;
         this.confirming = false;
+        if (reclaim)
+          this.$nextTick(() => this.$refs.deleteBtn?.focus());
       }, 3000);
+      // 删除钮被 v-if 销毁的瞬间焦点会掉到 body——arm 即把焦点带进确认条
+      this.$nextTick(() => this.$refs.confirmBtn?.focus());
     },
     confirmDelete() {
       // 连击护栏：确认条盖住的正是圆钮原位，300ms 内的第二击视为误触
-      if (Date.now() - this.armedAt < 300) return;
+      if (Date.now() - this.armedAt < 300) {
+        this.flashGuard();
+        return;
+      }
       clearTimeout(this.confirmTimer);
       this.$emit("emitColumnRemove", this.columnIdx);
+    },
+    // 护栏拒绝不静默：shake 一瞬告诉用户"按了、但太快"（与空输入回车同反馈语言）
+    flashGuard() {
+      this.guardFlash = false;
+      this.$nextTick(() => {
+        void this.$el.offsetWidth;
+        this.guardFlash = true;
+        clearTimeout(this.guardTimer);
+        this.guardTimer = setTimeout(() => {
+          this.guardFlash = false;
+        }, 500);
+      });
+    },
+
+    // 任务删除后组件卸载、焦点会掉到 body：转交事件之余把焦点落到同位邻居
+    // 任务卡的标签按钮（被删的是最后一张则落前一张），列被删空则落新增输入框
+    handleTaskRemove(taskIdx) {
+      this.$emit("emitTaskDialogRemove", this.columnIdx, taskIdx);
+      this.$nextTick(() => {
+        const labels = this.$el.querySelectorAll(".tile .one-line");
+        if (!labels.length) {
+          this.$refs.addTaskInput?.focus();
+          return;
+        }
+        labels[Math.min(taskIdx, labels.length - 1)].focus();
+      });
     },
 
     // 空输入回车：shake 一瞬告诉用户"按了、但没东西可加"

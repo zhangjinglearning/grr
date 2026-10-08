@@ -6,6 +6,7 @@ colors:
   bubblegum-teal: "#00d1b2"
   dino-green: "#48c78e"
   cream-yellow: "#ffe08a"
+  cream-yellow-hover: "#ffdc7d"
   playtable-graphite: "#363636"
   ink-black: "#0a0a0a"
   slate-text: "#2c3e50"
@@ -141,7 +142,7 @@ components:
 
 ### Hierarchy
 
-- **Title** (600, 2rem, 1.125)：看板名（如 "Workshop"），全站唯一的大字号，泡泡糖青着色。
+- **Title** (600, 2rem, 1.125)：看板名（如 "Workshop"）与 About 页标题，全站唯一的大字号；着色随底色——石墨桌面上泡泡糖青（约 6:1），白底页（About）换积木蓝 #485fc7（青在白底仅 2.0:1 不过 AA，蓝 5.6:1 过），与导航激活色、CTA 同语言。
 - **Body** (400, 1rem, 1.5)：任务描述、输入框文本、占位符。
 - **Label** (700, 1rem)：任务标签按钮与列头标题——粗体即"可交互"的信号。
 
@@ -175,7 +176,7 @@ components:
 - **任务标签按钮:** 石墨底 (#363636) + 白字 700 粗体；它本身就是任务文本的载体，点击打开编辑弹窗
 - **Submit:** 积木蓝底白字（Dialog 内确认）
 - **Cancel:** 白底积木蓝字（is-light 变体）
-- **Delete:** Bulma 默认半透明墨圆钮（rgba(10,10,10,.2)），伪元素画 ×——任务卡 32px、列头 24px；两段式确认覆层（sure? / delete '列名'?，文案带 (3s) 告知自动回退窗口，纯墨黑、盖满列头、3 秒未确认自动回退），确认期间 grip 不可拖，armed 后 300ms 内的确认点击视为误触（连击护栏，防双击直达删除），确认文案由独立的 sr-only live region 播报
+- **Delete:** Bulma 默认半透明墨圆钮（rgba(10,10,10,.2)），伪元素画 ×——任务卡 32px、列头 24px；两段式确认覆层（sure? / delete '列名'?，文案带 (3s) 告知自动回退窗口，纯墨黑、盖满列头、3 秒未确认自动回退），确认期间 grip 不可拖，armed 后 300ms 内的确认点击视为误触（连击护栏，防双击直达删除），确认文案由独立的 sr-only live region 播报；键盘契约：arm 即聚焦确认条（3 秒自动回退时若焦点仍在确认条则还给圆钮，不掉 body），护栏拒绝 shake 一瞬（empty-shake 同款、无红边——是"太快"不是"错误"），删除后焦点落到同位邻居（邻居任务卡标签钮 / 邻居列头删除钮，删空则落各自的新增输入框）
 - **Hover / Focus:** Bulma 默认——底色轻微加深（任务卡整块 hover 同语言：#ffe08a → #ffdc7d，Bulma warning 官方 hover 值）；focus ring `0 0 0 0.125em rgba(72,95,199,.25)`；delete 家族（Bulma 给了 outline:none）用墨黑 focus-visible 环 2px 补偿，Tab 焦点不隐形
 
 ### 任务卡 Task Tile（signature）

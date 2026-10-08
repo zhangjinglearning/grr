@@ -11,13 +11,16 @@
     </div>
     <button
       v-if="!confirming"
+      ref="deleteBtn"
       class="delete is-large"
       aria-label="删除任务"
       @click="armDelete"
     ></button>
     <button
       v-else
+      ref="confirmBtn"
       class="delete-confirm"
+      :class="{ 'confirm-guard-flash': guardFlash }"
       @click="confirmDelete"
     >
       sure? (3s)
@@ -43,24 +46,48 @@ export default {
   data() {
     return {
       confirming: false,
+      guardFlash: false,
     };
   },
   beforeUnmount() {
     clearTimeout(this.confirmTimer);
+    clearTimeout(this.guardTimer);
   },
   methods: {
     armDelete() {
       this.confirming = true;
       this.armedAt = Date.now();
       this.confirmTimer = setTimeout(() => {
+        // 3 秒回退时若焦点还在确认条上（键盘路径），还给圆钮而不是掉到 body
+        const reclaim = document.activeElement === this.$refs.confirmBtn;
         this.confirming = false;
+        if (reclaim)
+          this.$nextTick(() => this.$refs.deleteBtn?.focus());
       }, 3000);
+      // 圆钮被 v-if 销毁的瞬间焦点会掉到 body，键盘用户就是在这里"按了没反应"——
+      // arm 即把焦点带进确认条，Enter 继续、Tab 走人
+      this.$nextTick(() => this.$refs.confirmBtn?.focus());
     },
     confirmDelete() {
       // 连击护栏：确认条与圆钮同位，双击的第二击会直达删除——300ms 内视为误触
-      if (Date.now() - this.armedAt < 300) return;
+      if (Date.now() - this.armedAt < 300) {
+        this.flashGuard();
+        return;
+      }
       clearTimeout(this.confirmTimer);
       this.$emit("emitTaskRemove");
+    },
+    // 护栏拒绝不静默：shake 一瞬告诉用户"按了、但太快"（与空输入回车同反馈语言）
+    flashGuard() {
+      this.guardFlash = false;
+      this.$nextTick(() => {
+        void this.$el.offsetWidth;
+        this.guardFlash = true;
+        clearTimeout(this.guardTimer);
+        this.guardTimer = setTimeout(() => {
+          this.guardFlash = false;
+        }, 500);
+      });
     },
   },
 };
