@@ -9,7 +9,7 @@ web
 ## Users
 
 - 项目作者本人（zhangjinglearning）：以 grr 作为 Vue 3 现代工具链的学习与练手载体
-- 访客：通过线上 demo（grr.onrender.com）或仓库了解项目的人
+- 访客：通过仓库了解项目的人（线上 demo 停机中，重开后恢复此入口）
 
 ## Product Purpose
 
@@ -21,7 +21,7 @@ grr 是一个 Vue 3 版 Trello 克隆看板应用，定位是学习/演示项目
 
 ## Operating Context
 
-- 线上访问 grr.onrender.com（Render 部署），或本地 `npm run dev` 启动 Vite dev server
+- 本地 `npm run dev` 启动 Vite dev server 是主入口；线上 demo grr.onrender.com（Render 部署）2026-10 起已停机（实测 503），地址保留、可随时重开
 - 单页应用，hash 路由：`/`（Home）、`/grr`（看板主界面）、`/about`
 - 全部操作围绕一块硬编码初始看板（Workshop）：拖拽任务/列、增删改任务、新增列
 
@@ -35,7 +35,7 @@ grr 是一个 Vue 3 版 Trello 克隆看板应用，定位是学习/演示项目
 ## Brand Commitments
 
 - 名字 grr：来自 Peppa Pig 中 George 的口头禅 "grr~"（README 记载其命名缘由），名字本身是产品身份的一部分
-- 线上 demo 地址 grr.onrender.com
+- 线上 demo 地址 grr.onrender.com（当前停机，地址保留）
 
 ## Evidence on Hand
 
