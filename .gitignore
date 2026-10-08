@@ -22,3 +22,8 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+# 工具产物：impeccable 评审快照/QA 截图/检测器配置（含 design.json、ignore 规则，
+# 只在本机生效）与 ZCode 本机忽略配置，不入库
+.impeccable/
+.zcodeignore
