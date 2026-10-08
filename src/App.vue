@@ -81,6 +81,17 @@
     animation: empty-shake 0.3s ease;
   }
 
+  // delete 家族的 ×（含弹窗 modal-close）：Bulma 硬编码白色线条叠
+  // rgba(10,10,10,.2) 半透明底，混色后黄卡上仅约 2.0:1，不过 WCAG 1.4.11
+  // 可交互图形的 3:1；× 换石墨（Neutral 层不破一卡一色）——叠黄底约 6:1、
+  // 叠纸白 box 约 9.7:1。#app 前缀压过 Bulma 同名规则（本文件先于 bulma 注入）
+  #app .delete::before,
+  #app .delete::after,
+  #app .modal-close::before,
+  #app .modal-close::after {
+    background-color: #363636;
+  }
+
   @keyframes empty-shake {
     0%,
     100% {

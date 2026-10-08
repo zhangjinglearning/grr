@@ -36,7 +36,11 @@
             </button>
           </div>
           <div class="control">
-            <button class="button is-link is-light" @click="handleCloseClick">
+            <button
+              class="button is-link is-light"
+              :class="{ 'confirm-guard-flash': guardFlash }"
+              @click="handleCloseClick"
+            >
               {{ confirmingDiscard ? "discard? (3s)" : "Cancel" }}
             </button>
           </div>
@@ -73,6 +77,7 @@ export default {
     return {
       draft: {},
       emptyFlash: false,
+      guardFlash: false,
       confirmingDiscard: false
     };
   },
@@ -92,11 +97,15 @@ export default {
         this.confirmingDiscard = false;
         clearTimeout(this.discardTimer);
         this.lastFocused = document.activeElement;
+        // 弹窗开着时锁住背景滚动：描述 textarea 滚到底后滚轮会链式滚走
+        // 桌面，关闭后"桌子"位置漂移
+        document.documentElement.style.overflow = "hidden";
         document.addEventListener("keydown", this.handleKeydown);
         this.$nextTick(() => {
           this.$refs.labelInput.focus();
         });
       } else {
+        document.documentElement.style.overflow = "";
         document.removeEventListener("keydown", this.handleKeydown);
         // 关闭后把焦点还给触发元素（任务标签按钮），键盘用户不迷路
         if (this.lastFocused && this.lastFocused.focus) {
@@ -107,8 +116,11 @@ export default {
   },
   beforeUnmount() {
     document.removeEventListener("keydown", this.handleKeydown);
+    // 开着的状态下被卸载也要还滚动，别把整页锁死
+    document.documentElement.style.overflow = "";
     clearTimeout(this.discardTimer);
     clearTimeout(this.flashTimer);
+    clearTimeout(this.guardTimer);
   },
   methods: {
     handleKeydown(event) {
@@ -149,11 +161,27 @@ export default {
           }, 3000);
           return;
         }
-        // 连击护栏：armed 后 300ms 内的关闭动作（双击 Cancel/Esc）视为误触
-        if (Date.now() - this.armedAt < 300) return;
+        // 连击护栏：armed 后 300ms 内的关闭动作（双击 Cancel/Esc）视为误触；
+        // 不静默——与 Task/Column 同场景一样 shake 一瞬
+        if (Date.now() - this.armedAt < 300) {
+          this.flashGuard();
+          return;
+        }
       }
       clearTimeout(this.discardTimer);
       this.$emit("update:flag", false);
+    },
+    // 护栏拒绝不静默：shake 一瞬告诉用户"按了、但太快"（与 Task/Column 同反馈语言）
+    flashGuard() {
+      this.guardFlash = false;
+      this.$nextTick(() => {
+        void this.$el.offsetWidth;
+        this.guardFlash = true;
+        clearTimeout(this.guardTimer);
+        this.guardTimer = setTimeout(() => {
+          this.guardFlash = false;
+        }, 500);
+      });
     },
     // 空输入提交：shake 一瞬 + 红边，替代静默无反应
     flashEmpty() {
