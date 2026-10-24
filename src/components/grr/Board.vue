@@ -38,11 +38,16 @@
               :class="{ 'input-empty-flash': emptyFlash }"
               type="text"
               placeholder="add column"
-              aria-label="新增列"
+              aria-label="add column"
               v-model="columnName"
               @keydown.enter="handleColumnAdd"
             />
           </p>
+          <!-- 空输入回车的 shake 是纯视觉，独立 live region 补上播报（与 Column
+          加任务同款，500ms 与 shake 同生命周期） -->
+          <span class="is-sr-only" aria-live="assertive">
+            {{ emptyFlash ? "nothing to add — type a column name first" : "" }}
+          </span>
         </div>
       </div>
     </Container>

@@ -5,9 +5,10 @@
         <div
           class="card-header-title has-background-primary"
           style="cursor:grab"
+          :title="item.label"
         >
           <i class="fas fa-grip-horizontal grip" aria-hidden="true"></i>
-          {{ item.label }}
+          <span class="one-line-text">{{ item.label }}</span>
         </div>
         <span
           class="card-header-icon has-background-success"
@@ -22,7 +23,7 @@
           ref="deleteBtn"
           type="button"
           class="card-header-icon has-background-primary"
-          aria-label="删除列"
+          aria-label="delete column"
           @click="armDelete"
         >
           <span class="delete is-medium" aria-hidden="true"></span>
@@ -34,11 +35,15 @@
           :class="{ 'confirm-guard-flash': guardFlash }"
           @click="confirmDelete"
         >
-          delete '{{ item.label }}'? (3s)
+          <span class="confirm-text">{{ confirmText }}</span>
         </button>
-        <!-- 独立 live region（挂在被插入的按钮上播报不可靠），文案带上列名 -->
+        <!-- 独立 live region（挂在被插入的按钮上播报不可靠），文案带上列名与任务数 -->
         <span class="is-sr-only" aria-live="assertive">
-          {{ confirming ? `确认删除列 ${item.label}？3 秒后自动回退` : "" }}
+          {{
+            confirming
+              ? `delete column '${item.label}'${taskCountText}? reverts in 3 seconds`
+              : ""
+          }}
         </span>
       </div>
       <Container
@@ -64,11 +69,16 @@
               :class="{ 'input-empty-flash': emptyFlash }"
               type="text"
               placeholder="add task"
-              aria-label="新增任务"
+              aria-label="add task"
               v-model="taskName"
               @keydown.enter="handleTaskAdd"
             />
           </p>
+          <!-- 空输入回车的 shake 是纯视觉，独立 live region 补上播报（与删除确认
+          同范式但各自独立：这里的 500ms 清除不会挤掉 3 秒确认播报） -->
+          <span class="is-sr-only" aria-live="assertive">
+            {{ emptyFlash ? "nothing to add — type a task name first" : "" }}
+          </span>
         </div>
       </div>
     </div>
@@ -93,6 +103,17 @@ export default {
     columnIdx: {
       type: Number,
       required: true,
+    },
+  },
+  computed: {
+    // 删列连坐删掉整列任务，确认文案用任务数说清后果；空列不带尾巴
+    taskCountText() {
+      const n = this.item.list.length;
+      if (!n) return "";
+      return ` + ${n} ${n === 1 ? "task" : "tasks"}`;
+    },
+    confirmText() {
+      return `delete '${this.item.label}'${this.taskCountText}? (3s)`;
     },
   },
   data() {
@@ -203,6 +224,22 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+// 长列名单行省略，与任务卡 one-line 同范式：card-header-title 既是 .card-header
+// 的 flex 子项（min-width:auto 不许它收缩、长名把整张列卡撑爆），自身又是
+// flex 容器（text-overflow 对容器无效）——收缩许可落在自己身上，省略号落在
+// 内层 span 上；悬停 title 显全文
+.card-header-title {
+  min-width: 0;
+}
+
+.one-line-text {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 // 列头抓取点的视觉标示（cursor:grab 在触屏上不存在，图标是唯一 affordance）
 .grip {
   margin-right: 0.5rem;
@@ -237,9 +274,19 @@ export default {
   display: flex;
   font-size: 1rem;
   font-weight: 700;
+  padding: 0 10px;
+}
+
+// 确认文案两行封顶（与任务描述 line-clamp 同范式）：列名长短不受控，单行
+// 省略会先吃掉尾部的任务数与 (3s)——那正是这条文案存在的意义；40px 条高
+// 恰好容两行 1rem/1.2，极端长名两行装不下时才轮到省略
+.confirm-text {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: break-word;
+  line-height: 1.2;
 }
 
 // 触屏：删除圆钮达到 44px 触控目标，与任务卡同款；

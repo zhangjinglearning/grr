@@ -16,6 +16,16 @@
     color: #2c3e50;
   }
 
+  // Bulma 把系统栈直接指给原生 button/input/textarea（form 控件不吃继承，
+  // #app 的 Avenir 栈罩不住它们）——任务标签、确认条、输入框会与列头分成
+  // 两张脸；统一继承 #app（DESIGN.md：Avenir 栈通吃）。
+  // #app 前缀（ID 特异性）压过 Bulma 的元素级规则（本文件先于 bulma 注入）
+  #app button,
+  #app input,
+  #app textarea {
+    font-family: inherit;
+  }
+
   #nav {
     padding: 30px;
 
@@ -45,9 +55,15 @@
   // Bulma 对 delete 家族 outline:none 且无 focus-visible 补偿，Tab 焦点会隐形；
   // 墨黑环在黄卡（14:1）与青列头（6:1）上都成立
   .delete:focus-visible,
-  .modal-close:focus-visible,
   .delete-confirm:focus-visible {
     outline: 2px solid #0a0a0a;
+    outline-offset: 2px;
+  }
+
+  // modal-close 落在暗遮罩上（fixed 视口角、不在纸白 box 内），墨黑环同样
+  // 隐形——换纸白环，与其 × 线条同语言
+  .modal-close:focus-visible {
+    outline: 2px solid #fff;
     outline-offset: 2px;
   }
 
@@ -86,10 +102,16 @@
   // 可交互图形的 3:1；× 换石墨（Neutral 层不破一卡一色）——叠黄底约 6:1、
   // 叠纸白 box 约 9.7:1。#app 前缀压过 Bulma 同名规则（本文件先于 bulma 注入）
   #app .delete::before,
-  #app .delete::after,
+  #app .delete::after {
+    background-color: #363636;
+  }
+
+  // modal-close 是 × 石墨规则的例外：它压在近黑遮罩上（rgba(10,10,10,.86)
+  // 叠白底 ≈ #2c2c2c），石墨线条仅 ~1.2:1 几乎隐形——换纸白（Neutral 层），
+  // 叠遮罩约 16:1
   #app .modal-close::before,
   #app .modal-close::after {
-    background-color: #363636;
+    background-color: #fff;
   }
 
   @keyframes empty-shake {

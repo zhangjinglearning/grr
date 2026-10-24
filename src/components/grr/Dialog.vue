@@ -17,6 +17,11 @@
               @keydown.enter="handleSubmitClick"
             />
           </div>
+          <!-- 空提交的 shake 是纯视觉，独立 live region 补上播报（与下方 discard
+          确认的 live region 各自独立，500ms 清除不挤掉 3 秒确认播报） -->
+          <span class="is-sr-only" aria-live="assertive">
+            {{ emptyFlash ? "nothing to submit — type a task name first" : "" }}
+          </span>
         </div>
         <div class="field">
           <label class="label" for="task-desc-input">Description</label>
@@ -41,13 +46,13 @@
               :class="{ 'confirm-guard-flash': guardFlash }"
               @click="handleCloseClick"
             >
-              {{ confirmingDiscard ? "discard? (3s)" : "Cancel" }}
+              {{ confirmingDiscard ? "grr~ discard? (3s)" : "Cancel" }}
             </button>
           </div>
         </div>
         <!-- 独立 live region：discard 确认文案变化时主动播报（不挂在按钮上） -->
         <span class="is-sr-only" aria-live="assertive">
-          {{ confirmingDiscard ? "确认丢弃未保存的修改？3 秒后自动回退" : "" }}
+          {{ confirmingDiscard ? "discard unsaved changes? reverts in 3 seconds" : "" }}
         </span>
       </div>
     </div>
@@ -213,6 +218,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+// Cancel 空闲 83px、武装成 grr~ discard? (3s) 后 157px——按钮对居中会带着
+// Submit 一起横移（宽度跳变）；桌面两钮同锁 10rem（武装态实测 157px 装得
+// 下），空闲态也对称饱满，合积木手感。窄屏白盒内容宽最小 ~256px（320 视口），
+// 锁 10rem 会把按钮对挤进内边距甚至出盒——回到内容宽
+@media screen and (min-width: 769px) {
+  .is-grouped .button {
+    min-width: 10rem;
+  }
+}
+
 // 窄屏：Bulma 的 modal-content (width:100%) 在 justify-center 的 flex 容器里
 // 贴死屏幕左右缘；margin 会被溢出居中抵消，须直接锁宽
 @media screen and (max-width: 768px) {

@@ -14,7 +14,7 @@
       ref="deleteBtn"
       type="button"
       class="delete is-large"
-      aria-label="删除任务"
+      aria-label="delete task"
       @click="armDelete"
     ></button>
     <button
@@ -24,12 +24,12 @@
       :class="{ 'confirm-guard-flash': guardFlash }"
       @click="confirmDelete"
     >
-      sure? (3s)
+      grr~ sure? (3s)
     </button>
     <!-- aria-live 挂在被插入的按钮上播报不可靠，独立 live region 才是惯例；
     is-sr-only 是 Bulma 自带的视觉隐藏 -->
     <span class="is-sr-only" aria-live="assertive">
-      {{ confirming ? "确认删除任务？3 秒后自动回退" : "" }}
+      {{ confirming ? "delete task? reverts in 3 seconds" : "" }}
     </span>
   </span>
 </template>

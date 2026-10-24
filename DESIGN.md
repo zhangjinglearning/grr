@@ -138,7 +138,7 @@ components:
 **Body Font:** Avenir, Helvetica, Arial, sans-serif（App.vue 覆盖 Bulma 默认系统栈）
 **Label/Mono Font:** 无
 
-**Character:** 一张无个性的系统面孔——这正是直给的一部分。字体不表达情绪，粗细才是唯一的层级信号。
+**Character:** 一张无个性的系统面孔——这正是直给的一部分。字体不表达情绪，粗细才是唯一的层级信号。Bulma 用元素级规则把系统栈直接指给原生 button/input/textarea（form 控件不吃 #app 的继承），App.vue 以 `#app button, #app input, #app textarea { font-family: inherit }` 收回——否则任务标签按钮与列头两张 700 粗体会分成两张脸。
 
 ### Hierarchy
 
@@ -152,7 +152,7 @@ components:
 
 ## Layout
 
-石墨桌面（深色 box，左右 clamp(12px, 6vw, 72px) 流式出血——桌面 72px，窄屏收窄）承托一条横向列轨：Bulma 12 列栅格、每列 is-3（25% 宽，3 列 + add column 输入框恰好铺满一排；容器 nowrap 不换行，超过 4 列时列轨在桌面内横向滚动），由平滑拖拽容器横向排布。列内任务纵向堆叠，间距 10px；每列尾部固定一个新增输入框。顶部导航 30px padding，占位极小。整体密度宽松，色块靠自身色彩区分彼此，不依赖留白节奏。空板状态一行 roar 文案（"grr~ empty table — add a column"），是品牌声音在界面里的唯一出场。窄屏（≤768px）时列轨转为纵向全宽堆叠（自定义媒体查询：Bulma 的 is-3 栅格仅 ≥769px 生效，裸 flex 会横向溢出），列拖拽方向随之切为纵向（vertical/lock y），触屏指针下 delete 圆钮放大到 44px 触控目标。
+石墨桌面（深色 box，左右 clamp(12px, 6vw, 72px) 流式出血——桌面 72px，窄屏收窄）承托一条横向列轨：Bulma 12 列栅格、每列 is-3（25% 宽，3 列 + add column 输入框恰好铺满一排；容器 nowrap 不换行，超过 4 列时列轨在桌面内横向滚动），由平滑拖拽容器横向排布。列内任务纵向堆叠，间距 10px；每列尾部固定一个新增输入框。顶部导航 30px padding，占位极小。整体密度宽松，色块靠自身色彩区分彼此，不依赖留白节奏。空板状态一行 roar 文案（"grr~ empty table — add a column"）。品牌 roar 的出场点：空板问候 + 两处纯表态短确认（任务删除 grr~ sure? / 弹窗丢弃 grr~ discard?）——roar 只吼在不承载信息的短文案上，删列确认条（列名+任务数）不加装饰前缀，免得在窄列上挤掉载荷信息。窄屏（≤768px）时列轨转为纵向全宽堆叠（自定义媒体查询：Bulma 的 is-3 栅格仅 ≥769px 生效，裸 flex 会横向溢出），列拖拽方向随之切为纵向（vertical/lock y），触屏指针下 delete 圆钮放大到 44px 触控目标。
 
 ## Elevation & Depth
 
@@ -176,7 +176,7 @@ components:
 - **任务标签按钮:** 石墨底 (#363636) + 白字 700 粗体；它本身就是任务文本的载体，点击打开编辑弹窗
 - **Submit:** 积木蓝底白字（Dialog 内确认）
 - **Cancel:** 白底积木蓝字（is-light 变体）
-- **Delete:** Bulma 默认半透明墨圆钮（rgba(10,10,10,.2)），伪元素画 ×——任务卡 32px、列头 24px；× 线条石墨 #363636（Bulma 默认白色叠半透明底混色后黄卡上仅 ~2:1，不过 WCAG 1.4.11 的 3:1；石墨叠黄底 ~6:1、叠纸白 box ~9.7:1）；两段式确认覆层（sure? / delete '列名'?，文案带 (3s) 告知自动回退窗口，纯墨黑、盖满列头、3 秒未确认自动回退），确认期间 grip 不可拖，armed 后 300ms 内的确认点击视为误触（连击护栏，防双击直达删除），确认文案由独立的 sr-only live region 播报；键盘契约：arm 即聚焦确认条（3 秒自动回退时若焦点仍在确认条则还给圆钮，不掉 body），护栏拒绝 shake 一瞬（empty-shake 同款、无红边——是"太快"不是"错误"），删除后焦点落到同位邻居（邻居任务卡标签钮 / 邻居列头删除钮，删空则落各自的新增输入框）
+- **Delete:** Bulma 默认半透明墨圆钮（rgba(10,10,10,.2)），伪元素画 ×——任务卡 32px、列头 24px；× 线条石墨 #363636（Bulma 默认白色叠半透明底混色后黄卡上仅 ~2:1，不过 WCAG 1.4.11 的 3:1；石墨叠黄底 ~6:1、叠纸白 box ~9.7:1；唯一例外是弹窗 modal-close——它压在近黑遮罩上不在白底上，× 与 focus ring 换纸白）；两段式确认覆层（grr~ sure? / delete '列名' + N tasks?——任务数说清连坐删除的后果，空列不带尾巴；文案带 (3s) 告知自动回退窗口，纯墨黑、盖满列头、3 秒未确认自动回退；列名长短不受控，确认文案两行封顶（line-clamp，与任务描述同范式）——单行省略会先吃掉尾部的任务数与 (3s)，1024 视口 doing/done 实测也走两行全显），确认期间 grip 不可拖，armed 后 300ms 内的确认点击视为误触（连击护栏，防双击直达删除），确认文案由独立的 sr-only live region 播报；键盘契约：arm 即聚焦确认条（3 秒自动回退时若焦点仍在确认条则还给圆钮，不掉 body），护栏拒绝 shake 一瞬（empty-shake 同款、无红边——是"太快"不是"错误"），删除后焦点落到同位邻居（邻居任务卡标签钮 / 邻居列头删除钮，删空则落各自的新增输入框）
 - **Hover / Focus:** Bulma 默认——底色轻微加深（任务卡整块 hover 同语言：#ffe08a → #ffdc7d，Bulma warning 官方 hover 值）；focus ring `0 0 0 0.125em rgba(72,95,199,.25)`；delete 家族（Bulma 给了 outline:none）用墨黑 focus-visible 环 2px 补偿，Tab 焦点不隐形
 
 ### 任务卡 Task Tile（signature）
@@ -185,21 +185,21 @@ components:
 
 ### 列卡 Column Card（signature）
 
-积木蓝 card，4px 圆角，三段式：泡泡糖青列头（石墨深字 #363636——Bulma 背景类不改文字色，card-header-title 保持默认深字；bold，cursor:grab——拖动整列就抓这里，标题左侧 grip 图标标出抓取点，触屏上它是唯一 affordance）、透明内容区（1.5rem padding，任务在此堆叠）、列尾新增输入框。列头右侧恐龙绿状态图标（inbox / hammer / check-circle，纯装饰非按钮——hammer 表"进行中"，不用 spinner 免得被读作加载中），最右 24px 墨黑删除圆钮（两段式确认删列）。
+积木蓝 card，4px 圆角，三段式：泡泡糖青列头（石墨深字 #363636——Bulma 背景类不改文字色，card-header-title 保持默认深字；bold，cursor:grab——拖动整列就抓这里，标题左侧 grip 图标标出抓取点，触屏上它是唯一 affordance；列名单行省略——省略号落在内层 span 上，与任务卡同范式：card-header-title 既是 .card-header 的 flex 子项（min-width:0 才许收缩，否则长名撑爆列卡）又是 flex 容器（容器上的 text-overflow 无效），悬停 title 显全文）、透明内容区（1.5rem padding，任务在此堆叠）、列尾新增输入框。列头右侧恐龙绿状态图标（inbox / hammer / check-circle，纯装饰非按钮——hammer 表"进行中"，不用 spinner 免得被读作加载中），最右 24px 墨黑删除圆钮（两段式确认删列）。
 
 ### Inputs / Fields
 
 - **Style:** 纸白底、1px #dbdbdb 边框、4px 圆角、Bulma 内阴影（`inset 0 1px 2px rgba(10,10,10,.1)`）
 - **Focus:** 边框转积木蓝 + `0 0 0 0.125em rgba(72,95,199,.25)` 光晕
-- **提交方式:** 回车即提交（add task / add column），无提交按钮；空输入回车 shake + danger 红边一瞬，不再静默
+- **提交方式:** 回车即提交（add task / add column），无提交按钮；空输入回车 shake + danger 红边一瞬 + sr-only live region 播报（与 shake 同 500ms 生命周期），不再静默；全部 aria-label 与播报文案为英文，与可见文案同语言
 
 ### Dialog
 
-半透明墨黑遮罩（rgba(10,10,10,.86)）压住全屏，纸白 box（6px 圆角、浅阴影）居中。字段纵向排列（Task / Description），粗体标签；底部按钮对居中（积木蓝 Submit + 白底 Cancel）。键盘契约：打开自动聚焦 label 输入框，Tab 焦点陷阱留在弹窗内，关闭（含提交后）焦点还给触发元素；空提交 shake + 红边一瞬；有未保存改动时关闭走两段式（Cancel 变 discard?，3 秒回退），Esc/遮罩/Cancel 同规则，护栏拒绝与任务/列删除一样 shake 一瞬（不静默）。打开期间锁定背景滚动（滚轮不再链式滚走桌面，关闭即还原）。
+半透明墨黑遮罩（rgba(10,10,10,.86)）压住全屏，纸白 box（6px 圆角、浅阴影）居中。字段纵向排列（Task / Description），粗体标签；底部按钮对居中（积木蓝 Submit + 白底 Cancel），≥769px 两钮同锁 10rem——Cancel 武装成 grr~ discard? (3s)（实测 157px）时不跳宽、空闲态也对称饱满，窄屏（≤768px，白盒内容最小 ~256px）回内容宽免得挤出白盒。键盘契约：打开自动聚焦 label 输入框，Tab 焦点陷阱留在弹窗内，关闭（含提交后）焦点还给触发元素；空提交 shake + 红边一瞬 + sr-only 播报；有未保存改动时关闭走两段式（Cancel 变 grr~ discard?，3 秒回退），Esc/遮罩/Cancel 同规则，护栏拒绝与任务/列删除一样 shake 一瞬（不静默）。打开期间锁定背景滚动（滚轮不再链式滚走桌面，关闭即还原）。视口角的 modal-close：× 与 focus-visible 环都是纸白——它压在暗遮罩上（fixed 定位、不在白 box 内），石墨仅 ~1.2:1 几乎隐形。
 
 ### Navigation
 
-粗体链接（grr | about），页岩灰文字色，激活态积木蓝 #485fc7（复用主角色色，白底约 5.6:1 过 AA）。`/` 落地即重定向到看板，不再有独立 Home 页。About 页讲完命名故事后，页尾以积木蓝实心按钮 back to the table 送回看板。
+粗体链接（grr | about），页岩灰文字色，激活态积木蓝 #485fc7（复用主角色色，白底约 5.6:1 过 AA）。`/` 落地即重定向到看板，不再有独立 Home 页。About 页正文行内链接带下划线（Bulma 全局摘掉了 a 的下划线，仅靠颜色区分不过 WCAG 1.4.1；按钮形态的 CTA 自身可辨、不划线），讲完命名故事后，页尾以积木蓝实心按钮 back to the table 送回看板。
 
 favicon.svg 是 16px 迷你游戏桌——石墨桌面上积木蓝列、泡泡糖青列头、奶油黄任务卡各一块，全部复用角色色（积木是方的，连 16px 也是）。
 
@@ -209,7 +209,7 @@ favicon.svg 是 16px 迷你游戏桌——石墨桌面上积木蓝列、泡泡�
 
 - **Do** 保持一卡一色——层级问题先用饱和色块回答
 - **Do** 保持列头与任务卡的 cursor:grab，拖拽手感是产品核心
-- **Do** 任务标签单行省略、描述两行封顶（line-clamp），保持色块紧凑
+- **Do** 任务标签与列头标题单行省略（列头悬停 title 显全文）、描述两行封顶（line-clamp），保持色块紧凑
 - **Do** 用字重做层级：700 标签 / 600 标题 / 400 正文
 
 ### Don't:
