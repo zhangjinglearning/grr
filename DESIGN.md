@@ -65,13 +65,18 @@ components:
     textColor: "{colors.paper-white}"
     rounded: "{rounded.pill}"
     size: "32px"
+  delete-confirm-bar:
+    backgroundColor: "{colors.ink-black}"
+    textColor: "{colors.paper-white}"
+    typography: "{typography.task-label}"
+    rounded: "{rounded.pill}"
   submit-button:
     backgroundColor: "{colors.brick-blue}"
     textColor: "{colors.paper-white}"
     rounded: "{rounded.md}"
   cancel-button:
-    backgroundColor: "{colors.paper-white}"
-    textColor: "{colors.brick-blue}"
+    backgroundColor: "#eff1fa"
+    textColor: "#3850b7"
     rounded: "{rounded.md}"
   text-input:
     backgroundColor: "{colors.paper-white}"
@@ -164,7 +169,7 @@ components:
 
 ## Shapes
 
-全系统小圆角：输入框、按钮、任务卡 4px；box 外框 6px；2px 备用未启用。delete 圆钮是唯一的完整圆（9999px）。块面以纯色矩形为主，仅有的细线是输入框 1px 边框与列尾分割线。没有大圆角、没有裁切、没有异形——积木是方的。
+全系统小圆角：输入框、按钮、任务卡 4px；box 外框 6px；2px 备用未启用。delete 圆钮与两段式确认条是仅有的完整圆（9999px 药丸）。块面以纯色矩形为主，仅有的细线是输入框 1px 边框与列尾分割线。没有大圆角、没有裁切、没有异形——积木是方的。
 
 ## Components
 
@@ -175,9 +180,9 @@ components:
 - **Shape:** 小圆角（4px），实心色块，无渐变无花描边
 - **任务标签按钮:** 石墨底 (#363636) + 白字 700 粗体；它本身就是任务文本的载体，点击打开编辑弹窗
 - **Submit:** 积木蓝底白字（Dialog 内确认）
-- **Cancel:** 白底积木蓝字（is-light 变体）
+- **Cancel:** 淡积木蓝底 #eff1fa + 深积木蓝字 #3850b7（Bulma is-link is-light 变体的实际渲染值——积木蓝的衍生 tint 对，不占一卡一色的新角色；hover #e6e9f7）
 - **Delete:** Bulma 默认半透明墨圆钮（rgba(10,10,10,.2)），伪元素画 ×——任务卡 32px、列头 24px；× 线条石墨 #363636（Bulma 默认白色叠半透明底混色后黄卡上仅 ~2:1，不过 WCAG 1.4.11 的 3:1；石墨叠黄底 ~6:1、叠纸白 box ~9.7:1；唯一例外是弹窗 modal-close——它压在近黑遮罩上不在白底上，× 与 focus ring 换纸白）；两段式确认覆层（grr~ sure? / delete '列名' + N tasks?——任务数说清连坐删除的后果，空列不带尾巴；文案带 (3s) 告知自动回退窗口，纯墨黑、盖满列头、3 秒未确认自动回退；列名长短不受控，确认文案两行封顶（line-clamp，与任务描述同范式）——单行省略会先吃掉尾部的任务数与 (3s)，1024 视口 doing/done 实测也走两行全显），确认期间 grip 不可拖，armed 后 300ms 内的确认点击视为误触（连击护栏，防双击直达删除），确认文案由独立的 sr-only live region 播报；键盘契约：arm 即聚焦确认条（3 秒自动回退时若焦点仍在确认条则还给圆钮，不掉 body），护栏拒绝 shake 一瞬（empty-shake 同款、无红边——是"太快"不是"错误"），删除后焦点落到同位邻居（邻居任务卡标签钮 / 邻居列头删除钮，删空则落各自的新增输入框）
-- **Hover / Focus:** Bulma 默认——底色轻微加深（任务卡整块 hover 同语言：#ffe08a → #ffdc7d，Bulma warning 官方 hover 值）；focus ring `0 0 0 0.125em rgba(72,95,199,.25)`；delete 家族（Bulma 给了 outline:none）用墨黑 focus-visible 环 2px 补偿，Tab 焦点不隐形
+- **Hover / Focus:** Bulma 默认——底色轻微加深（任务卡整块 hover 同语言：#ffe08a → #ffdc7d，Bulma warning 官方 hover 值）；focus ring `0 0 0 0.125em rgba(72,95,199,.25)`；delete 家族（Bulma 给了 outline:none）用墨黑 focus-visible 环 2px 补偿，Tab 焦点不隐形（modal-close 例外：压在暗遮罩上，换纸白环，见 Dialog）
 
 ### 任务卡 Task Tile（signature）
 
@@ -195,7 +200,7 @@ components:
 
 ### Dialog
 
-半透明墨黑遮罩（rgba(10,10,10,.86)）压住全屏，纸白 box（6px 圆角、浅阴影）居中。字段纵向排列（Task / Description），粗体标签；底部按钮对居中（积木蓝 Submit + 白底 Cancel），≥769px 两钮同锁 10rem——Cancel 武装成 grr~ discard? (3s)（实测 157px）时不跳宽、空闲态也对称饱满，窄屏（≤768px，白盒内容最小 ~256px）回内容宽免得挤出白盒。键盘契约：打开自动聚焦 label 输入框，Tab 焦点陷阱留在弹窗内，关闭（含提交后）焦点还给触发元素；空提交 shake + 红边一瞬 + sr-only 播报；有未保存改动时关闭走两段式（Cancel 变 grr~ discard?，3 秒回退），Esc/遮罩/Cancel 同规则，护栏拒绝与任务/列删除一样 shake 一瞬（不静默）。打开期间锁定背景滚动（滚轮不再链式滚走桌面，关闭即还原）。视口角的 modal-close：× 与 focus-visible 环都是纸白——它压在暗遮罩上（fixed 定位、不在白 box 内），石墨仅 ~1.2:1 几乎隐形。
+半透明墨黑遮罩（rgba(10,10,10,.86)）压住全屏，纸白 box（6px 圆角、浅阴影）居中。字段纵向排列（Task / Description），粗体标签；底部按钮对居中（积木蓝 Submit + 淡积木蓝底 Cancel），≥769px 两钮同锁 10rem——Cancel 武装成 grr~ discard? (3s)（实测 157px）时不跳宽、空闲态也对称饱满，窄屏（≤768px，白盒内容最小 ~256px）回内容宽免得挤出白盒。键盘契约：打开自动聚焦 label 输入框，Tab 焦点陷阱留在弹窗内，关闭（含提交后）焦点还给触发元素；空提交 shake + 红边一瞬 + sr-only 播报；有未保存改动时关闭走两段式（Cancel 变 grr~ discard?，3 秒回退），Esc/遮罩/Cancel 同规则，护栏拒绝与任务/列删除一样 shake 一瞬（不静默）。打开期间锁定背景滚动（滚轮不再链式滚走桌面，关闭即还原）。视口角的 modal-close：× 与 focus-visible 环都是纸白——它压在暗遮罩上（fixed 定位、不在白 box 内），石墨仅 ~1.2:1 几乎隐形。
 
 ### Navigation
 
@@ -209,7 +214,7 @@ favicon.svg 是 16px 迷你游戏桌——石墨桌面上积木蓝列、泡泡�
 
 - **Do** 保持一卡一色——层级问题先用饱和色块回答
 - **Do** 保持列头与任务卡的 cursor:grab，拖拽手感是产品核心
-- **Do** 任务标签与列头标题单行省略（列头悬停 title 显全文）、描述两行封顶（line-clamp），保持色块紧凑
+- **Do** 任务标签与列头标题单行省略（列头悬停 title 显全文）、描述与确认文案两行封顶（line-clamp），保持色块紧凑
 - **Do** 用字重做层级：700 标签 / 600 标题 / 400 正文
 
 ### Don't:
