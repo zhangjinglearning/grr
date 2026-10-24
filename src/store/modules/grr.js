@@ -44,10 +44,11 @@ export const useGrrStore = defineStore("grr", {
   }),
   actions: {
     saveTask({ columnIdx, taskIdx = -1, task }) {
+      const list = this.board.columns[columnIdx].list;
       if (taskIdx === -1) {
-        this.board.columns[columnIdx].list.push(task);
+        list.push(task);
       } else {
-        this.board.columns[columnIdx].list[taskIdx] = task;
+        list[taskIdx] = task;
       }
     },
     saveColumn({ columnName }) {
@@ -70,9 +71,10 @@ export const useGrrStore = defineStore("grr", {
     },
     dropColumn({ removedIndex, addedIndex }) {
       if (removedIndex !== null && addedIndex !== null) {
-        const moveColumn = { ...this.board.columns[removedIndex] };
-        this.board.columns.splice(removedIndex, 1);
-        this.board.columns.splice(addedIndex, 0, moveColumn);
+        const columns = this.board.columns;
+        const column = { ...columns[removedIndex] };
+        columns.splice(removedIndex, 1);
+        columns.splice(addedIndex, 0, column);
       }
     },
     dropTask({ columnIdx, removedIndex, addedIndex }) {
@@ -95,9 +97,11 @@ export const useGrrStore = defineStore("grr", {
       }
     },
     moveTask({ from, to }) {
-      const task = { ...this.board.columns[from.columnIdx].list[from.fromIdx] };
-      this.board.columns[from.columnIdx].list.splice(from.fromIdx, 1);
-      this.board.columns[to.columnIdx].list.splice(to.toIdx, 0, task);
+      const fromList = this.board.columns[from.columnIdx].list;
+      const task = { ...fromList[from.fromIdx] };
+      const toList = this.board.columns[to.columnIdx].list;
+      fromList.splice(from.fromIdx, 1);
+      toList.splice(to.toIdx, 0, task);
     },
   },
 });

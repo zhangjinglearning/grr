@@ -66,19 +66,19 @@ export default {
   props: {
     flag: {
       type: Boolean,
-      default: false
+      default: false,
     },
     task: {
       type: Object,
-      default: () => ({})
-    }
+      default: () => ({}),
+    },
   },
   data() {
     return {
       draft: {},
       emptyFlash: false,
       guardFlash: false,
-      confirmingDiscard: false
+      confirmingDiscard: false,
     };
   },
   computed: {
@@ -88,7 +88,7 @@ export default {
         this.draft.label !== this.task.label ||
         (this.draft.description || "") !== (this.task.description || "")
       );
-    }
+    },
   },
   watch: {
     flag(open) {
@@ -112,7 +112,7 @@ export default {
           this.lastFocused.focus();
         }
       }
-    }
+    },
   },
   beforeUnmount() {
     document.removeEventListener("keydown", this.handleKeydown);
@@ -197,7 +197,7 @@ export default {
       });
     },
     handleSubmitClick(event) {
-      if (event && (event.isComposing || event.keyCode === 229)) return;
+      if (event.isComposing || event.keyCode === 229) return;
       if (!(this.draft.label || "").trim()) {
         this.flashEmpty();
         return;
@@ -208,7 +208,7 @@ export default {
         description: (this.draft.description || "").trim()
       });
     }
-  }
+  },
 };
 </script>
 

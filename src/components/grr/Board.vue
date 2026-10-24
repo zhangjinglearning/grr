@@ -68,8 +68,8 @@ export default {
   data() {
     return {
       flag: false,
-      columnIdx: "",
-      taskIdx: "",
+      columnIdx: null,
+      taskIdx: null,
       task: {},
       columnName: "",
       emptyFlash: false,
@@ -111,8 +111,8 @@ export default {
         taskIdx: this.taskIdx,
         task,
       });
-      this.columnIdx = "";
-      this.taskIdx = "";
+      this.columnIdx = null;
+      this.taskIdx = null;
       this.task = {};
       this.flag = false;
     },

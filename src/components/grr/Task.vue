@@ -12,6 +12,7 @@
     <button
       v-if="!confirming"
       ref="deleteBtn"
+      type="button"
       class="delete is-large"
       aria-label="删除任务"
       @click="armDelete"
